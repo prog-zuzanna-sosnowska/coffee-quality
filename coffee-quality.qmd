@@ -2,10 +2,24 @@
 title: "coffee-quality"
 ---
 
-## Quarto
+## Jakość kawy
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+Analiza ma na celu ocenę jakości kawy na podstawie zestawu cech związanych z jej pochodzeniem, metodami przetwarzania oraz właściwościami sensorycznymi. Celem jest znalezienie wzorców i czynników wpływających na jakość kawy oraz udzielenie odpowiedzi na pytania badawcze dotyczące wpływu takich zmiennych jak region, wysokość upraw czy metoda przetwarzania na ocenę sensoryczną kawy.
+
+### Pochodzenie danych
+
+Dane pochodzą z bazy Coffee Quality Database udostępnionej przez CQI (Coffee Quality Institute) na platformie Kaggle.\
+**Link do źródła danych:** [Kaggle](https://www.kaggle.com/datasets/volpatto/coffee-quality-database-from-cqi?resource=download).\
+**Licencja:** Dane zostały udostępnione na licencji publicznej przez CQI, jednak szczegóły licencyjne należy potwierdzić na stronie źródłowej.\
+**Metody zbierania danych:** Dane zostały zebrane przez certyfikowanych oceniających jakości kawy, którzy oceniali próbki kawy według standardów CQI. Informacje dotyczą zarówno parametrów fizycznych, takich jak wysokość upraw, jak i ocen sensorycznych, takich jak aromat, smak czy posmak.
 
 ```{r}
-1 + 1
+# Wczytaj pakiety
+library(dplyr)
+library(ggplot2)
+
+# Wczytaj dane
+data <- read.csv("arabica_data_cleaned.csv")
+
+data
 ```
