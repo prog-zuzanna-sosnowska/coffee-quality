@@ -2,24 +2,89 @@
 title: "coffee-quality"
 ---
 
-## Jakość kawy
+## Wstęp
 
-Analiza ma na celu ocenę jakości kawy na podstawie zestawu cech związanych z jej pochodzeniem, metodami przetwarzania oraz właściwościami sensorycznymi. Celem jest znalezienie wzorców i czynników wpływających na jakość kawy oraz udzielenie odpowiedzi na pytania badawcze dotyczące wpływu takich zmiennych jak region, wysokość upraw czy metoda przetwarzania na ocenę sensoryczną kawy.
+Celem naszego sprawozdania jest analiza jakości kawy na podstawie cech związanych z jej charakterem sensorycznym, miejscem uprawy oraz metodą przetwarzania. Kawy są oceniane według różnych parametrów, takich jak aromat, smak, posmak czy kwasowość, które składają się na ogólną ocenę jakości (`Total.Cup.Points`).
 
-### Pochodzenie danych
+Analiza tych danych pozwoli nam lepiej zrozumieć, które z cech mają największy wpływ na końcową ocenę. Dodatkowo zbadamy, w jaki sposób takie czynniki jak wysokość upraw (`Altitude`), kraj pochodzenia (`Country.of.Origin`) czy metoda przetwarzania (`Processing.Method`) różnicują wyniki oceny sensorycznej.
 
-Dane pochodzą z bazy Coffee Quality Database udostępnionej przez CQI (Coffee Quality Institute) na platformie Kaggle.\
-**Link do źródła danych:** [Kaggle](https://www.kaggle.com/datasets/volpatto/coffee-quality-database-from-cqi?resource=download).\
-**Licencja:** Dane zostały udostępnione na licencji publicznej przez CQI, jednak szczegóły licencyjne należy potwierdzić na stronie źródłowej.\
-**Metody zbierania danych:** Dane zostały zebrane przez certyfikowanych oceniających jakości kawy, którzy oceniali próbki kawy według standardów CQI. Informacje dotyczą zarówno parametrów fizycznych, takich jak wysokość upraw, jak i ocen sensorycznych, takich jak aromat, smak czy posmak.
+Nasze badanie opiera się na danych dotyczących jakości kawy zebranych przez Coffee Quality Institute (CQI). Dzięki tym analizom możliwe będzie zidentyfikowanie kluczowych aspektów, które wpływają na jakość kawy, co może być istotne zarówno dla producentów, jak i konsumentów.
+
+## Pochodzenie danych
+
+Dane użyte w projekcie pochodzą z bazy Coffee Quality Database, prowadzonej przez Coffee Quality Institute (CQI), organizację non-profit zajmującą się oceną i poprawą jakości kawy na świecie. Oryginalne dane zostały pozyskane ze strony internetowej CQI ([database.coffeeinstitute.org](https://database.coffeeinstitute.org)) za pomocą narzędzi web scrapingowych, takich jak Selenium i Beautiful Soup. Zbiór danych udostępniony na platformie Kaggle jest zbiorem przetworzonym – zawiera zarówno surowe dane (takie jak pobrano z CQI), jak i dane oczyszczone, w których ujednolicono formaty i jednostki miar dla wybranych zmiennych.
+
+**Licencja danych**\
+Dane na Kaggle zostały udostępnione jako część projektu opublikowanego przez użytkownika GitHub z zastosowaniem licencji MIT. Licencja ta pozwala na swobodne wykorzystanie danych, również w celach edukacyjnych, o ile zachowana zostanie informacja o oryginalnym źródle. Warto jednak zaznaczyć, że pierwotne dane z CQI nie mają określonej licencji, co sugeruje konieczność ich wykorzystania z zachowaniem ostrożności, szczególnie w kontekstach komercyjnych.
+
+### **Opis zmiennych**
+
+1.  Dane, które analizujemy, obejmują różnorodne aspekty dotyczące jakości kawy, jej cech sensorycznych, metadanych o ziarnach oraz danych o farmach, z których kawa pochodzi. Poniżej przedstawiamy szczegółowy opis zmiennych dostępnych w zbiorze danych:
+
+    #### **1. Miary jakości kawy (Quality Measures)**
+
+    -   **Aroma (aromat)** – ocena zapachu kawy, w skali od 0 do 10 punktów. Wysoka ocena wskazuje na intensywny, przyjemny aromat.
+
+    -   **Flavor (smak)** – ocena smaku kawy, w skali od 0 do 10 punktów. Uwzględnia harmonię i intensywność smaków.
+
+    -   **Aftertaste (posmak)** – ocena wrażeń smakowych po spożyciu kawy, w skali od 0 do 10 punktów.
+
+    -   **Acidity (kwasowość)** – ocena poziomu i charakteru kwasowości kawy, w skali od 0 do 10 punktów.
+
+    -   **Body (konsystencja)** – ocena wrażeń związanych z ciężkością i teksturą kawy, w skali od 0 do 10 punktów.
+
+    -   **Balance (balans)** – ocena harmonii pomiędzy różnymi cechami sensorycznymi, w skali od 0 do 10 punktów.
+
+    -   **Uniformity (jednorodność)** – wskaźnik spójności smaku pomiędzy filiżankami, w skali od 0 do 10 punktów.
+
+    -   **Cup Cleanliness (czystość smaku)** – ocena obecności negatywnych nut smakowych, w skali od 0 do 10 punktów.
+
+    -   **Sweetness (słodycz)** – ocena słodkich nut w kawie, w skali od 0 do 10 punktów.
+
+    -   **Moisture (wilgotność)** – zawartość wody w ziarnach kawy, wyrażona w procentach.
+
+    -   **Defects (wady)** – liczba defektów w próbce kawy, co może wpływać negatywnie na jej jakość.
+
+    #### **2. Metadane o ziarnach kawy (Bean Metadata)**
+
+    -   **Processing.Method (metoda przetwarzania)** – sposób przetwarzania ziaren kawy (np. „natural”, „washed”).
+
+    -   **Color (kolor)** – kolor ziaren kawy (np. „green”, „yellow”).
+
+    -   **Species (gatunek)** – gatunek kawy: arabica lub robusta.
+
+    #### **3. Metadane o farmach (Farm Metadata)**
+
+    -   **Owner (właściciel)** – nazwa właściciela farmy.
+
+    -   **Country.of.Origin (kraj pochodzenia)** – kraj, z którego pochodzi kawa.
+
+    -   **Farm.Name (nazwa farmy)** – nazwa farmy, na której uprawiana była kawa.
+
+    -   **Lot.Number (numer partii)** – numer partii kawy.
+
+    -   **Mill (młyn)** – nazwa młyna, w którym przetwarzano kawę.
+
+    -   **Company (firma)** – firma zajmująca się dystrybucją kawy.
+
+    -   **Altitude (wysokość upraw)** – wysokość, na której uprawiana jest kawa, wyrażona w metrach nad poziomem morza.
+
+    -   **Region (region)** – region, w którym znajduje się farma.
+
+W naszym sprawozdaniu skupimy się na analizie czynników wpływających na ocenę jakości kawy. W szczególności postaramy się odpowiedzieć na następujące pytania badawcze:
+
+-   **Cechy sensoryczne**: Jakie cechy sensoryczne (np. aromat, smak, posmak) mają największy wpływ na ogólną ocenę jakości kawy wyrażoną jako Total.Cup.Points?
+
+-   **Wysokość upraw**: Czy wysokość, na której uprawiana jest kawa (Altitude), ma istotny wpływ na jej jakość ocenianą sensorycznie?
+
+-   **Różnice między krajami i metodami przetwarzania**: Jak oceny sensoryczne kaw różnią się w zależności od kraju pochodzenia (Country.of.Origin) i metody przetwarzania (Processing.Method)?
 
 ```{r}
-# Wczytaj pakiety
+# Wczytane pakiety
 library(dplyr)
 library(ggplot2)
 
-# Wczytaj dane
+# Wczytane dane
 data <- read.csv("arabica_data_cleaned.csv")
-
 data
 ```
