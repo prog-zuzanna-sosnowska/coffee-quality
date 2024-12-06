@@ -3,24 +3,24 @@ title: "Analiza jakości kawy"
 authors: "Zuzanna Sosnowska, Jagoda Płócienniczak" 
 ---
 
-## Wstęp
+## 1. Wstęp
 
 Celem naszego sprawozdania jest analiza jakości kawy na podstawie cech związanych z jej charakterem sensorycznym, miejscem uprawy oraz metodą przetwarzania. Oceny kaw opierają się na różnych aspektach, takich jak aromat, smak, posmak czy kwasowość, które wspólnie tworzą końcową ocenę jakości wyrażoną w punktach (`Total.Cup.Points`).
 
 Analiza tych danych umożliwi lepsze zrozumienie, które cechy w największym stopniu wpływają na końcową ocenę jakości kawy. Ponadto przeanalizujemy, w jaki sposób takie czynniki jak wysokość upraw (`Altitude`), kraj pochodzenia (`Country.of.Origin`) oraz metoda przetwarzania (`Processing.Method`) wpływają na różnice w wynikach oceny sensorycznej.
 
-## Pochodzenie danych
+## 2. Pochodzenie danych
 
 Dane pochodzą z bazy Coffee Quality Database (styczeń 2018), prowadzonej przez Coffee Quality Institute (CQI), organizację non-profit zajmującą się oceną i poprawą jakości kawy na świecie. Oryginalne dane zostały pozyskane ze strony internetowej CQI ([database.coffeeinstitute.org](https://database.coffeeinstitute.org)) za pomocą narzędzi web scrapingowych, takich jak Selenium i Beautiful Soup. Zbiór danych, który analizujemy w dalszej części sprawozdania, pochodzi z platformy Kaggle i stanowi wersję przetworzoną – zawiera zarówno surowe dane (takie jak pobrano z CQI), jak i dane oczyszczone, w których ujednolicono formaty i jednostki miar dla wybranych zmiennych.
 
-**Licencja danych**\
+**2.1. Licencja danych**\
 Dane na Kaggle zostały udostępnione jako część projektu opublikowanego przez użytkownika GitHub z zastosowaniem licencji MIT. Licencja ta pozwala na swobodne wykorzystanie danych, również w celach edukacyjnych, o ile zachowana zostanie informacja o oryginalnym źródle. Warto jednak zaznaczyć, że pierwotne dane z CQI nie mają określonej licencji, co sugeruje konieczność ich wykorzystania z zachowaniem ostrożności, szczególnie w kontekstach komercyjnych.
 
-## Opis zmiennych
+## 3. Opis zmiennych
 
 Dane, które analizujemy, obejmują szeroki zakres informacji dotyczących jakości kawy, w tym jej cech sensorycznych, metadanych związanych z ziarnami oraz szczegółów dotyczących farm, z których pochodzi. Zebrane informacje zostały podzielone na kilka kategorii. Poniżej przedstawiamy szczegółowy opis dostępnych zmiennych:
 
-***1. Miary jakości kawy (Quality Measures)***
+**3.1. Miary jakości kawy (Quality Measures)**
 
 -   **Aroma (aromat)** – ocena zapachu kawy, w skali od 0 do 10 punktów. Wysoka ocena wskazuje na intensywny, przyjemny aromat.
 
@@ -44,7 +44,7 @@ Dane, które analizujemy, obejmują szeroki zakres informacji dotyczących jako�
 
 -   **Defects (wady)** – liczba defektów w próbce kawy, co może wpływać negatywnie na jej jakość.
 
-***2. Metadane o ziarnach kawy (Bean Metadata)***
+**3.2. Metadane o ziarnach kawy (Bean Metadata)**
 
 -   **Processing.Method (metoda przetwarzania)** – sposób przetwarzania ziaren kawy (np. „natural”, „washed”).
 
@@ -52,7 +52,7 @@ Dane, które analizujemy, obejmują szeroki zakres informacji dotyczących jako�
 
 -   **Species (gatunek)** – gatunek kawy: arabica lub robusta.
 
-***3. Metadane o farmach (Farm Metadata)***
+**3.3. Metadane o farmach (Farm Metadata)**
 
 -   **Owner (właściciel)** – nazwa właściciela farmy.
 
@@ -80,31 +80,31 @@ Postaramy się również odpowiedzieć na następujące pytania badawcze:
 
 -   Jak oceny sensoryczne kaw różnią się w zależności od kraju pochodzenia (`Country.of.Origin`) i metody przetwarzania (`Processing.Method`)?
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # Wczytane pakiety
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
 library(patchwork)
+library(knitr)
 ```
 
 ```{r, echo=FALSE}
 # Oryginalne dane
 data <- read.csv("arabica_data_cleaned.csv")
+data <- head(data, -1)
 data[data == ""] <- NA
 ```
 
-```{r, echo=FALSE}
-# Przesiewanie danych, z których korzystamy
-data_select <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Sweetness", "altitude_mean_meters", "Total.Cup.Points")]
-```
 
 ```{r, echo=FALSE}
-data_clean <- data_select %>%
+#Przesiewanie danych
+data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Sweetness", "altitude_mean_meters", "Total.Cup.Points")] |>
   mutate(Processing.Method = factor(Processing.Method),)
 ```
 
 ```{r, echo=FALSE, results='hide'}
+#Liczba braku danych
 sum(is.na(data_clean$Processing.Method))
 sum(is.na(data_clean$Country.of.Origin))
 sum(is.na(data_clean$altitude_mean_meters))
@@ -113,39 +113,111 @@ sum(is.na(data_clean$aroma))
 sum(is.na(data_clean$Sweetness))
 sum(is.na(data_clean$Total.Cup.Points))
 ```
+## 4. Analiza danych
 
-## Analiza danych
+**4.1.Statystyki opisowe**
 
-**Zmienne ciągłe**
+Zanim przejdziemy do głębszej analizy danych, zacznijmy od zaprezentowania podstawowych statystyk opisowych, które stanowią fundament każdej analizy. Statystyki te pozwalają na zrozumienie ogólnych właściwości badanych zmiennych i ułatwiają interpretację wyników.
 
-**Zmienne kategoryczne**
+  **a) zmienne ciągłe**
+  
+Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe oraz zakres wartości (minimalną i maksymalną) dla badanych parametrów.
 
-```{r}
-table(data_clean$Processing.Method)
+```{r, echo = FALSE, results='hide'}
+#Statystyki opisowe
+
+#Flavor
+mean_flavor <- mean(data_clean$Flavor, na.rm = TRUE)
+median_flavor <- median(data_clean$Flavor, na.rm = TRUE)
+sd_flavor <- sd(data_clean$Flavor, na.rm = TRUE)
+min_flavor <- min(data_clean$Flavor, na.rm = TRUE)  
+max_flavor <- max(data_clean$Flavor, na.rm = TRUE)
+rozrzut_flavor <- max_flavor - min_flavor
+
+#Aroma
+mean_aroma <- mean(data_clean$Aroma, na.rm = TRUE)
+median_aroma <- median(data_clean$Aroma, na.rm = TRUE)
+sd_aroma <- sd(data_clean$Aroma, na.rm = TRUE)
+min_aroma <- min(data_clean$Aroma, na.rm = TRUE)  
+max_aroma <- max(data_clean$Aroma, na.rm = TRUE)
+rozrzut_aroma <- max_aroma - min_aroma
+
+#Sweetness
+mean_sweetness <- mean(data_clean$Sweetness, na.rm = TRUE)
+median_sweetness <- median(data_clean$Sweetness, na.rm = TRUE)
+sd_sweetness <- sd(data_clean$Sweetness, na.rm = TRUE)
+min_sweetness <- min(data_clean$Sweetness, na.rm = TRUE)  
+max_sweetness <- max(data_clean$Sweetness, na.rm = TRUE)
+
+#Altitude
+mean_altitude <- mean(data_clean$altitude_mean_meters, na.rm = TRUE)
+median_altitude <- median(data_clean$altitude_mean_meters, na.rm = TRUE)
+sd_altitude <- sd(data_clean$altitude_mean_meters, na.rm = TRUE)
+min_altitude <- min(data_clean$altitude_mean_meters, na.rm = TRUE)  
+max_altitude <- max(data_clean$altitude_mean_meters, na.rm = TRUE)
+
+#Total.Cup.Points
+mean_points <- mean(data_clean$Total.Cup.Points, na.rm = TRUE)
+median_points <- median(data_clean$Total.Cup.Points, na.rm = TRUE)
+sd_points <- sd(data_clean$Total.Cup.Points, na.rm = TRUE)
+min_points <- min(data_clean$Total.Cup.Points, na.rm = TRUE)  
+max_points <- max(data$Total.Cup.Points, na.rm = TRUE)
+
+#Processing.Method
+count_method <- table(data_clean$Processing.Method)
+
+#Country.of.Origin
+count_country <- table(data_clean$Country.of.Origin)
 ```
+
+
+```{r, echo = FALSE, message=FALSE}
+# Statystyki - zmienne ciągłe
+stats_description_a <- data.frame(
+  Zmienna = c("Flavor", "Aroma", "Sweetnes", "Total.Cup.Points", "Altitude [m]"),
+  Średnia = round(c(mean_flavor, mean_aroma, mean_sweetness, mean_points, mean_altitude), 3),
+  Mediana = round(c(median_flavor, median_aroma, median_sweetness, median_points, median_altitude), 3),
+  Odchylenie.standardowe = round(c(sd_flavor, sd_aroma, sd_sweetness, sd_points, sd_altitude), 3),
+  Min = round(c(min_flavor, min_aroma, min_sweetness, min_points, min_altitude), 3),
+  Max = round(c(max_flavor, max_aroma, max_sweetness, max_points, max_altitude), 3)
+)
+
+kable(stats_description_a, format = "markdown", col.names = c("Zmienna", "Średnia", "Mediana", "Odch. Std.", "Min", "Max"))
+```
+
+
+<br>
+
+  **b) zmienne kategoryczne**
+  
+Dla zmiennych kategorycznych przedstawiono na poniższych wykresach rozkład częstości występowania poszczególnych kategorii w badanych danych.
+
+  - **Processing.Method**
+  
+Przyjrzyjmy się najpierw liczbie wystąpień poszczególnych metod przetwarzania ziaren.
 
 ```{r, echo = FALSE}
 ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = fct_infreq(Processing.Method))) +
   geom_bar(fill = "lightblue") +
-  labs(title = "Rozkład sposobu przetwarzania ziaren kawy", x = "Processing.Method") +
+  labs(title = "Częstość występowania metod przetwarzania ziaren kawy", x = "Metoda przetwarzania", y = "Liczba wystąpień") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
 ```
+Najczęściej stosowaną metodą przetwarzania ziaren kawy jest "washed/wet", tuż za nią znajduje się metoda "natural/dry". Choć ich popularność może sugerować, że prowadzą do wyższej jakości kawy, sama liczba wystąpień tych metod nie jest wystarczająca, aby jednoznacznie stwierdzić, czy rzeczywiście przekładają się one na lepszy produkt końcowy. Tego rodzaju zależności zostaną szczegółowo przeanalizowane w kolejnych częściach raportu.
+
+  - **Country.of.Origin**
+  
+Przyjrzyjmy się teraz wykresowi przedstawiającemu liczbę próbek kawy z poszczególnych krajów.
 
 ```{r, echo = FALSE}
-ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Method, y = Flavor)) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  geom_boxplot()
+ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Country.of.Origin))) +
+  geom_bar(fill = "lightblue") +
+  labs(title = "Częstość występowania krajów pochodzenia ziaren kawy", x = "Kraj pochodzenia", y = "Liczba wystąpień") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
 ```
+ 
+Widać wyraźną dominację niektórych państw, takich jak Meksyk, Kolumbia czy Gwatemala, w porównaniu do innych. Należy jednak pamiętać, że dane o kraju pochodzenia ziaren nie pozwalają na wyciągnięcie jednoznacznych wniosków o jakości kawy z tych regionów. Choć Meksyk pojawia się częściej w badaniach, nie można na tej podstawie stwierdzić, że jego kawa jest lepsza niż ta pochodząca z Japonii. To zagadnienie również zostanie szczegółowo przeanalizowane w dalszej części raportu.
 
-```{r, echo=FALSE}
-cup_point_washed = data_clean$Total.Cup.Points[data_clean$Processing.Method == "Washed / Wet"]
-cup_point_natural = data_clean$Total.Cup.Points[data_clean$Processing.Method == "Natural / Dry"]
-
-t.test(cup_point_washed, cup_point_natural)
-
-shapiro.test(cup_point_washed)
-shapiro.test(cup_point_natural)
-```
+**4.2. Analiza - zmienne ciągłe**
 
 ```{r, echo=FALSE}
 plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
@@ -168,3 +240,15 @@ plot_aroma <- ggplot(data_clean, aes(x = Aroma)) +
 
 plot_flavour + plot_aroma
 ```
+
+**4.3. Analiza - zmienne kategoryczne**
+
+
+```{r, echo = FALSE}
+ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Method, y = Total.Cup.Points)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Metoda przetwarzania") +
+  geom_boxplot()
+```
+
+
