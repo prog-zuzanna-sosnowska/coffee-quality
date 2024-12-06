@@ -4,6 +4,7 @@ authors: "Zuzanna Sosnowska, Jagoda Płócienniczak"
 ---
 
 ## Wstęp
+
 Celem naszego sprawozdania jest analiza jakości kawy na podstawie cech związanych z jej charakterem sensorycznym, miejscem uprawy oraz metodą przetwarzania. Oceny kaw opierają się na różnych aspektach, takich jak aromat, smak, posmak czy kwasowość, które wspólnie tworzą końcową ocenę jakości wyrażoną w punktach (`Total.Cup.Points`).
 
 Analiza tych danych umożliwi lepsze zrozumienie, które cechy w największym stopniu wpływają na końcową ocenę jakości kawy. Ponadto przeanalizujemy, w jaki sposób takie czynniki jak wysokość upraw (`Altitude`), kraj pochodzenia (`Country.of.Origin`) oraz metoda przetwarzania (`Processing.Method`) wpływają na różnice w wynikach oceny sensorycznej.
@@ -21,54 +22,53 @@ Dane, które analizujemy, obejmują szeroki zakres informacji dotyczących jako�
 
 ***1. Miary jakości kawy (Quality Measures)***
 
-  -   **Aroma (aromat)** – ocena zapachu kawy, w skali od 0 do 10 punktów. Wysoka ocena wskazuje na intensywny, przyjemny aromat.
+-   **Aroma (aromat)** – ocena zapachu kawy, w skali od 0 do 10 punktów. Wysoka ocena wskazuje na intensywny, przyjemny aromat.
 
-  -   **Flavor (smak)** – ocena smaku kawy, w skali od 0 do 10 punktów. Uwzględnia harmonię i intensywność smaków.
+-   **Flavor (smak)** – ocena smaku kawy, w skali od 0 do 10 punktów. Uwzględnia harmonię i intensywność smaków.
 
-  -   **Aftertaste (posmak)** – ocena wrażeń smakowych po spożyciu kawy, w skali od 0 do 10 punktów.
+-   **Aftertaste (posmak)** – ocena wrażeń smakowych po spożyciu kawy, w skali od 0 do 10 punktów.
 
-  -   **Acidity (kwasowość)** – ocena poziomu i charakteru kwasowości kawy, w skali od 0 do 10 punktów.
+-   **Acidity (kwasowość)** – ocena poziomu i charakteru kwasowości kawy, w skali od 0 do 10 punktów.
 
-  -   **Body (konsystencja)** – ocena wrażeń związanych z ciężkością i teksturą kawy, w skali od 0 do 10 punktów.
+-   **Body (konsystencja)** – ocena wrażeń związanych z ciężkością i teksturą kawy, w skali od 0 do 10 punktów.
 
-  -   **Balance (balans)** – ocena harmonii pomiędzy różnymi cechami sensorycznymi, w skali od 0 do 10 punktów.
+-   **Balance (balans)** – ocena harmonii pomiędzy różnymi cechami sensorycznymi, w skali od 0 do 10 punktów.
 
-  -   **Uniformity (jednorodność)** – wskaźnik spójności smaku pomiędzy filiżankami, w skali od 0 do 10 punktów.
+-   **Uniformity (jednorodność)** – wskaźnik spójności smaku pomiędzy filiżankami, w skali od 0 do 10 punktów.
 
-  -   **Cup Cleanliness (czystość smaku)** – ocena obecności negatywnych nut smakowych, w skali od 0 do 10 punktów.
+-   **Cup Cleanliness (czystość smaku)** – ocena obecności negatywnych nut smakowych, w skali od 0 do 10 punktów.
 
-  -   **Sweetness (słodycz)** – ocena słodkich nut w kawie, w skali od 0 do 10 punktów.
+-   **Sweetness (słodycz)** – ocena słodkich nut w kawie, w skali od 0 do 10 punktów.
 
-  -   **Moisture (wilgotność)** – zawartość wody w ziarnach kawy, wyrażona w procentach.
+-   **Moisture (wilgotność)** – zawartość wody w ziarnach kawy, wyrażona w procentach.
 
-  -   **Defects (wady)** – liczba defektów w próbce kawy, co może wpływać negatywnie na jej jakość.
+-   **Defects (wady)** – liczba defektów w próbce kawy, co może wpływać negatywnie na jej jakość.
 
 ***2. Metadane o ziarnach kawy (Bean Metadata)***
 
-  -   **Processing.Method (metoda przetwarzania)** – sposób przetwarzania ziaren kawy (np. „natural”, „washed”).
+-   **Processing.Method (metoda przetwarzania)** – sposób przetwarzania ziaren kawy (np. „natural”, „washed”).
 
-  -   **Color (kolor)** – kolor ziaren kawy (np. „green”, „yellow”).
+-   **Color (kolor)** – kolor ziaren kawy (np. „green”, „yellow”).
 
-  -   **Species (gatunek)** – gatunek kawy: arabica lub robusta.
+-   **Species (gatunek)** – gatunek kawy: arabica lub robusta.
 
 ***3. Metadane o farmach (Farm Metadata)***
 
-  -   **Owner (właściciel)** – nazwa właściciela farmy.
+-   **Owner (właściciel)** – nazwa właściciela farmy.
 
-  -   **Country.of.Origin (kraj pochodzenia)** – kraj, z którego pochodzi kawa.
+-   **Country.of.Origin (kraj pochodzenia)** – kraj, z którego pochodzi kawa.
 
-  -   **Farm.Name (nazwa farmy)** – nazwa farmy, na której uprawiana była kawa.
+-   **Farm.Name (nazwa farmy)** – nazwa farmy, na której uprawiana była kawa.
 
-  -   **Lot.Number (numer partii)** – numer partii kawy.
+-   **Lot.Number (numer partii)** – numer partii kawy.
 
-  -   **Mill (młyn)** – nazwa młyna, w którym przetwarzano kawę.
+-   **Mill (młyn)** – nazwa młyna, w którym przetwarzano kawę.
 
-  -   **Company (firma)** – firma zajmująca się dystrybucją kawy.
+-   **Company (firma)** – firma zajmująca się dystrybucją kawy.
 
-  -   **Altitude (wysokość upraw)** – wysokość, na której uprawiana jest kawa, wyrażona w metrach nad poziomem morza.
+-   **Altitude (wysokość upraw)** – wysokość, na której uprawiana jest kawa, wyrażona w metrach nad poziomem morza.
 
-  -   **Region (region)** – region, w którym znajduje się farma.
-
+-   **Region (region)** – region, w którym znajduje się farma.
 
 Dane, które analizujemy, zawierają szereg informacji o różnych czynnikach wpływających na ostateczną ocenę jakości kawy. Ze względu na ich obszerność, do szczegółowej analizy wybierzemy te zmienne, które naszym zdaniem mają największy wpływ na jakość kawy (`Flavor`,`Aroma`, `Sweetness`, `Processing.Method`) oraz te, które wzbudziły naszą ciekawość (`Country.Of.Origin`, `altitude_mean_meters`). Dzięki temu będziemy mogli skoncentrować się na kluczowych aspektach, które umożliwią wyciągnięcie trafnych i precyzyjnych wniosków.
 
@@ -78,15 +78,15 @@ Postaramy się również odpowiedzieć na następujące pytania badawcze:
 
 -   Czy wysokość, na której uprawiana jest kawa (`Altitude`), ma istotny wpływ na jej jakość ocenianą sensorycznie?
 
--  Jak oceny sensoryczne kaw różnią się w zależności od kraju pochodzenia (`Country.of.Origin`) i metody przetwarzania (`Processing.Method`)?
+-   Jak oceny sensoryczne kaw różnią się w zależności od kraju pochodzenia (`Country.of.Origin`) i metody przetwarzania (`Processing.Method`)?
 
 ```{r, echo=FALSE, message=FALSE}
 # Wczytane pakiety
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
+library(patchwork)
 ```
-
 
 ```{r, echo=FALSE}
 # Oryginalne dane
@@ -94,18 +94,15 @@ data <- read.csv("arabica_data_cleaned.csv")
 data[data == ""] <- NA
 ```
 
-
 ```{r, echo=FALSE}
 # Przesiewanie danych, z których korzystamy
 data_select <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Sweetness", "altitude_mean_meters", "Total.Cup.Points")]
 ```
 
-
 ```{r, echo=FALSE}
 data_clean <- data_select %>%
   mutate(Processing.Method = factor(Processing.Method),)
 ```
-
 
 ```{r, echo=FALSE, results='hide'}
 sum(is.na(data_clean$Processing.Method))
@@ -116,6 +113,7 @@ sum(is.na(data_clean$aroma))
 sum(is.na(data_clean$Sweetness))
 sum(is.na(data_clean$Total.Cup.Points))
 ```
+
 ## Analiza danych
 
 **Zmienne ciągłe**
@@ -125,6 +123,7 @@ sum(is.na(data_clean$Total.Cup.Points))
 ```{r}
 table(data_clean$Processing.Method)
 ```
+
 ```{r, echo = FALSE}
 ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = fct_infreq(Processing.Method))) +
   geom_bar(fill = "lightblue") +
@@ -138,14 +137,34 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Me
   geom_boxplot()
 ```
 
-
 ```{r, echo=FALSE}
-cup_point_wasched = data_clean$Total.Cup.Points[data_clean$Processing.Method == "Washed / Wet"]
+cup_point_washed = data_clean$Total.Cup.Points[data_clean$Processing.Method == "Washed / Wet"]
 cup_point_natural = data_clean$Total.Cup.Points[data_clean$Processing.Method == "Natural / Dry"]
 
-t.test(cup_point_wasched, cup_point_natural)
+t.test(cup_point_washed, cup_point_natural)
 
-shapiro.test(cup_point_wasched)
+shapiro.test(cup_point_washed)
 shapiro.test(cup_point_natural)
 ```
 
+```{r, echo=FALSE}
+plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
+  geom_bar(fill = "lightblue") +
+  labs(title = "Rozkład Flavour", x = "Flavor", y = "Liczba obserwacji") +
+    xlim(5, 10) +
+  theme_minimal()
+
+plot_aroma <- ggplot(data_clean, aes(x = Aroma)) +
+  geom_bar(fill = "lightgreen") +
+  labs(title = "Rozkład Aroma", x = "Aroma", y = "Liczba obserwacji") +
+  xlim(5, 10) +
+  theme_minimal()
+
+# plot_sweetness <- ggplot(data_clean, aes(x = Sweetness)) +
+#   geom_bar(fill = "lightpink") +
+#   labs(title = "Rozkład Sweetness", x = "Sweetness", y = "Liczba obserwacji") +
+#   xlim(5, 10) +
+#   theme_minimal()
+
+plot_flavour + plot_aroma
+```
