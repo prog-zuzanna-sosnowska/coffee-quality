@@ -84,6 +84,7 @@ Postaramy się również odpowiedzieć na następujące pytania badawcze:
 # Wczytane pakiety
 library(dplyr)
 library(ggplot2)
+library(reshape2)
 library(tidyverse)
 library(patchwork)
 library(knitr)
@@ -98,7 +99,7 @@ data[data == ""] <- NA
 
 ```{r, echo=FALSE}
 #Przesiewanie danych
-data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Sweetness", "altitude_mean_meters", "Total.Cup.Points")] |>
+data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Acidity", "Aftertaste", "altitude_mean_meters", "Total.Cup.Points")] |>
   mutate(Processing.Method = factor(Processing.Method),)
 ```
 
@@ -109,7 +110,6 @@ sum(is.na(data_clean$Country.of.Origin))
 sum(is.na(data_clean$altitude_mean_meters))
 sum(is.na(data_clean$flavor))
 sum(is.na(data_clean$aroma))
-sum(is.na(data_clean$Sweetness))
 sum(is.na(data_clean$Total.Cup.Points))
 ```
 
@@ -242,12 +242,30 @@ plot_acidity <- ggplot(data_clean, aes(x = Acidity)) +
 
 plot_aftertaste <- ggplot(data_clean, aes(x = Aftertaste)) +
   # geom_bar(fill = "lightgoldenrod") +
-    stat_density(fill = "lightgoldenrod") + 
+    geom_density(fill = "lightgoldenrod") + 
   labs(title = "Rozkład Aftertaste", x = "Aftertaste", y = "Liczba obserwacji") +
   xlim(5, 10) +
   theme_minimal(base_size = 8)
 
 (plot_flavour + plot_aroma) / (plot_acidity + plot_aftertaste)
+```
+
+```{r, echo = FALSE}
+cor_data <- data_clean[, c("Aroma", "Acidity", "Flavor", "Aftertaste", "Total.Cup.Points")]
+
+# Obliczenie macierzy korelacji
+cor_matrix <- cor(cor_data, use = "complete.obs")
+
+cor_melt <- melt(cor_matrix)
+
+# Tworzenie heatmapy z ggplot2
+ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(limit = c(0.5, 1), space = "Lab", 
+                       name = "Korelacja") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  labs(title = "Heatmapa korelacji", x = "", y = "")
 ```
 
 **4.3. Analiza - zmienne kategoryczne**
