@@ -220,24 +220,34 @@ Widać wyraźną dominację niektórych państw, takich jak Meksyk, Kolumbia czy
 
 ```{r, echo=FALSE}
 plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
-  geom_bar(fill = "lightblue") +
+  # geom_bar(fill = "lightblue") +
+  geom_density(fill = "lightblue") + 
   labs(title = "Rozkład Flavour", x = "Flavor", y = "Liczba obserwacji") +
     xlim(5, 10) +
-  theme_minimal()
+  theme_minimal(base_size = 8)
 
 plot_aroma <- ggplot(data_clean, aes(x = Aroma)) +
-  geom_bar(fill = "lightgreen") +
+  # geom_bar(fill = "lightgreen") +
+  geom_density(fill = "lightgreen") + 
   labs(title = "Rozkład Aroma", x = "Aroma", y = "Liczba obserwacji") +
   xlim(5, 10) +
-  theme_minimal()
+  theme_minimal(base_size = 8)
 
-# plot_sweetness <- ggplot(data_clean, aes(x = Sweetness)) +
-#   geom_bar(fill = "lightpink") +
-#   labs(title = "Rozkład Sweetness", x = "Sweetness", y = "Liczba obserwacji") +
-#   xlim(5, 10) +
-#   theme_minimal()
+plot_acidity <- ggplot(data_clean, aes(x = Acidity)) +
+  # geom_bar(fill = "lightpink") +
+  geom_density(fill = "lightpink") + 
+  labs(title = "Rozkład Acidity", x = "Acidity", y = "Liczba obserwacji") +
+  xlim(5, 10) +
+  theme_minimal(base_size = 8)
 
-plot_flavour + plot_aroma
+plot_aftertaste <- ggplot(data_clean, aes(x = Aftertaste)) +
+  # geom_bar(fill = "lightgoldenrod") +
+    stat_density(fill = "lightgoldenrod") + 
+  labs(title = "Rozkład Aftertaste", x = "Aftertaste", y = "Liczba obserwacji") +
+  xlim(5, 10) +
+  theme_minimal(base_size = 8)
+
+(plot_flavour + plot_aroma) / (plot_acidity + plot_aftertaste)
 ```
 
 **4.3. Analiza - zmienne kategoryczne**
