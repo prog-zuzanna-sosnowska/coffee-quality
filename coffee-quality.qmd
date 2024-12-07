@@ -100,7 +100,7 @@ data[data == ""] <- NA
 
 ```{r, echo=FALSE}
 #Przesiewanie danych
-data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Acidity", "Aftertaste", "altitude_mean_meters", "Total.Cup.Points")] |>
+data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Acidity", "Aftertaste","Moisture", "altitude_mean_meters", "Total.Cup.Points")] |>
   mutate(Processing.Method = factor(Processing.Method),)
 ```
 
@@ -259,17 +259,18 @@ plot_aftertaste <- ggplot(data_clean, aes(x = Aftertaste)) +
 ```
 
 ```{r, echo = FALSE}
-cor_data <- data_clean[, c("Aroma", "Acidity", "Flavor", "Aftertaste", "Total.Cup.Points")]
+cor_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Moisture", "altitude_mean_meters", "Total.Cup.Points")]
 
-# Obliczenie macierzy korelacji
-cor_matrix <- cor(cor_data, use = "complete.obs")
+cor_matrix <- cor(cor_data, use = "complete.obs", method = "spearman")
 
 cor_melt <- melt(cor_matrix)
-
 # Tworzenie heatmapy z ggplot2
 ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
   geom_tile(color = "white") +
-  scale_fill_gradient2(limit = c(0.5, 1), space = "Lab", 
+  geom_text(aes(label = round(value, 2)), color = "black", size = 4) +
+  scale_fill_gradientn(colors = c("lightblue","lightyellow", "red"), 
+                      values = scales::rescale(c(-0.21, 0.75, 1)), 
+                       limits = c(-0.21, 1), 
                        name = "Korelacja") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
