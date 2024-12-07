@@ -1,7 +1,6 @@
 ---
 title: "Analiza jakości kawy"
 authors: "Zuzanna Sosnowska, Jagoda Płócienniczak" 
-format: html
 ---
 
 ## 1. Wstęp
@@ -85,6 +84,7 @@ Postaramy się również odpowiedzieć na następujące pytania badawcze:
 # Wczytane pakiety
 library(dplyr)
 library(ggplot2)
+library(reshape2)
 library(tidyverse)
 library(patchwork)
 library(knitr)
@@ -97,10 +97,9 @@ data <- head(data, -1)
 data[data == ""] <- NA
 ```
 
-
 ```{r, echo=FALSE}
 #Przesiewanie danych
-data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Sweetness", "altitude_mean_meters", "Total.Cup.Points")] |>
+data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Acidity", "Aftertaste", "altitude_mean_meters", "Total.Cup.Points")] |>
   mutate(Processing.Method = factor(Processing.Method),)
 ```
 
@@ -109,11 +108,13 @@ data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor"
 sum(is.na(data_clean$Processing.Method))
 sum(is.na(data_clean$Country.of.Origin))
 sum(is.na(data_clean$altitude_mean_meters))
-sum(is.na(data_clean$flavor))
-sum(is.na(data_clean$aroma))
-sum(is.na(data_clean$Sweetness))
+sum(is.na(data_clean$Flavor))
+sum(is.na(data_clean$Aroma))
+sum(is.na(data_clean$Acidity))
+sum(is.na(data_clean$Aftertaste))
 sum(is.na(data_clean$Total.Cup.Points))
 ```
+
 ## 4. Analiza danych
 
 **4.1.Statystyki opisowe**
@@ -143,12 +144,6 @@ min_aroma <- min(data_clean$Aroma, na.rm = TRUE)
 max_aroma <- max(data_clean$Aroma, na.rm = TRUE)
 rozrzut_aroma <- max_aroma - min_aroma
 
-#Sweetness
-mean_sweetness <- mean(data_clean$Sweetness, na.rm = TRUE)
-median_sweetness <- median(data_clean$Sweetness, na.rm = TRUE)
-sd_sweetness <- sd(data_clean$Sweetness, na.rm = TRUE)
-min_sweetness <- min(data_clean$Sweetness, na.rm = TRUE)  
-max_sweetness <- max(data_clean$Sweetness, na.rm = TRUE)
 
 #Altitude
 mean_altitude <- mean(data_clean$altitude_mean_meters, na.rm = TRUE)
@@ -171,21 +166,19 @@ count_method <- table(data_clean$Processing.Method)
 count_country <- table(data_clean$Country.of.Origin)
 ```
 
-
 ```{r, echo = FALSE, message=FALSE}
 # Statystyki - zmienne ciągłe
 stats_description_a <- data.frame(
   Zmienna = c("Flavor", "Aroma", "Total.Cup.Points", "Altitude [m]"),
   Średnia = round(c(mean_flavor, mean_aroma, mean_points, mean_altitude), 3),
   Mediana = round(c(median_flavor, median_aroma, median_points, median_altitude), 3),
-  Odchylenie.standardowe = round(c(sd_flavor, sd_aroma,sd_points, sd_altitude), 3),
+  Odchylenie.standardowe = round(c(sd_flavor, sd_aroma, sd_points, sd_altitude), 3),
   Min = round(c(min_flavor, min_aroma, min_points, min_altitude), 3),
-  Max = round(c(max_flavor, max_aroma, max_points, max_altitude), 3)
+  Max = round(c(max_flavor, max_aroma,max_points, max_altitude), 3)
 )
 
 kable(stats_description_a, format = "markdown", col.names = c("Zmienna", "Średnia", "Mediana", "Odch. Std.", "Min", "Max"))
 ```
-
 
 <br>
 
@@ -201,6 +194,7 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = fct_infreq(Pr
   labs(title = "Częstość występowania metod przetwarzania ziaren kawy", x = "Metoda przetwarzania", y = "Liczba wystąpień") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
 ```
+
 Najczęściej stosowaną metodą przetwarzania ziaren kawy jest "washed/wet", a zaraz za nią plasuje się metoda "natural/dry". Wysoka popularność tych metod rodzi pytanie, czy są one związane z wyższą jakością kawy. Choć na podstawie samej częstości ich występowania nie możemy tego jednoznacznie stwierdzić, stanowi to punkt wyjścia do dalszej analizy. Hipoteza ta zostanie szczegółowo zbadana w kolejnych częściach raportu (*rozdział 4.3.*).
 
   - **Country.of.Origin**
@@ -211,31 +205,59 @@ ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Co
   labs(title = "Częstość występowania krajów pochodzenia ziaren kawy", x = "Kraj pochodzenia", y = "Liczba wystąpień") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
 ```
- 
-Powyższy wykres pokazuje dominację niektórych krajów w zestawieniu z innymi. Zauważamy, że najwięcej próbek pochodzi z Meksyku, Kolumbii i Gwatemali. To skłania do pytania, czy wyższa produkcja kawy w tych krajach wynika z jej lepszej jakości. Ta kwestia również zostanie szczegółowo sprawdzona w dalszej części (*rozdział 4.3.*).
+
+Powyższy wykres pokazuje dominację niektórych krajów w zestawieniu z innymi. Zauważmy, że najwięcej próbek pochodzi z Meksyku, Kolumbii i Gwatemali.
 
 **4.2. Analiza - zmienne ciągłe**
 
 ```{r, echo=FALSE}
 plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
-  geom_bar(fill = "lightblue") +
+  # geom_bar(fill = "lightblue") +
+  geom_density(fill = "lightblue") + 
   labs(title = "Rozkład Flavour", x = "Flavor", y = "Liczba obserwacji") +
     xlim(5, 10) +
-  theme_minimal()
+  theme_minimal(base_size = 8)
 
 plot_aroma <- ggplot(data_clean, aes(x = Aroma)) +
-  geom_bar(fill = "lightgreen") +
+  # geom_bar(fill = "lightgreen") +
+  geom_density(fill = "lightgreen") + 
   labs(title = "Rozkład Aroma", x = "Aroma", y = "Liczba obserwacji") +
   xlim(5, 10) +
-  theme_minimal()
+  theme_minimal(base_size = 8)
 
-# plot_sweetness <- ggplot(data_clean, aes(x = Sweetness)) +
-#   geom_bar(fill = "lightpink") +
-#   labs(title = "Rozkład Sweetness", x = "Sweetness", y = "Liczba obserwacji") +
-#   xlim(5, 10) +
-#   theme_minimal()
+plot_acidity <- ggplot(data_clean, aes(x = Acidity)) +
+  # geom_bar(fill = "lightpink") +
+  geom_density(fill = "lightpink") + 
+  labs(title = "Rozkład Acidity", x = "Acidity", y = "Liczba obserwacji") +
+  xlim(5, 10) +
+  theme_minimal(base_size = 8)
 
-plot_flavour + plot_aroma
+plot_aftertaste <- ggplot(data_clean, aes(x = Aftertaste)) +
+  # geom_bar(fill = "lightgoldenrod") +
+    geom_density(fill = "lightgoldenrod") + 
+  labs(title = "Rozkład Aftertaste", x = "Aftertaste", y = "Liczba obserwacji") +
+  xlim(5, 10) +
+  theme_minimal(base_size = 8)
+
+(plot_flavour + plot_aroma) / (plot_acidity + plot_aftertaste)
+```
+
+```{r, echo = FALSE}
+cor_data <- data_clean[, c("Aroma", "Acidity", "Flavor", "Aftertaste", "Total.Cup.Points")]
+
+# Obliczenie macierzy korelacji
+cor_matrix <- cor(cor_data, use = "complete.obs")
+
+cor_melt <- melt(cor_matrix)
+
+# Tworzenie heatmapy z ggplot2
+ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(limit = c(0.5, 1), space = "Lab", 
+                       name = "Korelacja") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  labs(title = "Heatmapa korelacji", x = "", y = "")
 ```
 
 **4.3. Analiza - zmienne kategoryczne**
@@ -243,6 +265,8 @@ plot_flavour + plot_aroma
 W tej części skupimy się na analizie jak zmienne `Processing.Method` i `Country.of.Origin` wpływają na oceny sensoryczne, a w ostateczności na końcową ewaluację smaku kawy.
 
   **4.3.1. Wpływ zmiennej `Processing.Method`**
+
+W *rozdziale 4.1. b)* zauważyliśmy, że metoda "Washed/Wet" przeważa liczebnie wśród badanych technik przetwarzania ziaren kawy. Teraz, przechodząc do analizy, przyjrzymy się, jak różne metody wpływają na sensoryczne oceny kawy, takie jak "Flavor" (*wykres a*) oraz "Aroma" (*wykres b*), a także na ogólną jakość kawy, wyrażoną poprzez "Total.Cup.Points" (*wykres c*). W tej części skupimy się na szczegółowej interpretacji tych wyników, uwzględniając również liczebność próbek, aby formułowane wnioski były jak najbardziej trafne i rzetelne.
   
   **a)**
 
@@ -253,6 +277,9 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Me
   labs(x = "Metoda przetwarzania", title = "Flavor w zależności od metody przetwarzania") +
   geom_boxplot()
 ```
+
+
+
   **b)**
   
 ```{r, echo = FALSE}
@@ -263,8 +290,6 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Me
   geom_boxplot()
 
 ```
-
-Na tym etapie analizy możemy zauważyć, że metoda przetwarzania, którą wcześniej uznaliśmy za najpopularniejszą, nie wyróżnia się znacząco w porównaniu do innych metod, zarówno w kontekście zmiennej "Flavor" (podpunkt *a*), jak i "Aroma" (podpunkt *b*). W obu przypadkach średnie wartości dla poszczególnych metod są zbliżone, co sugeruje, że nie ma wyraźnych różnic w tych zmiennych pomiędzy metodami.
 
 
   **c)**
@@ -279,17 +304,9 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Me
 ```
 
 
-
-```{r, echo = FALSE, results='hide'}
-data_filtered <- subset(data_clean, Processing.Method %in% c('Washed / Wet', 'Natural / Dry'))
-
-t.test(Total.Cup.Points ~ Processing.Method, data = data_filtered)
-
-```
-
   **4.3.2. Wpływ zmiennej `Country.of.Origin`**
   
-Celem tej analizy jest określenie, który kraj produkuje najlepszą kawę. Ze względu na dużą liczbę krajów w naszym zbiorze danych, aby uniknąć zbyt szczegółowej i czasochłonnej analizy, na początku wykluczymy kraje, które mają mniej niż 30 obserwacji. Takie kraje mogą wprowadzać nieprecyzyjne wnioski. Ponadto, skupimy się na krajach, których średnia punktacja Total.Cup.Point wynosi co najmniej 82 punkty, ponieważ międzynarodowe standardy uznają kawy oceniane na minimalnie 80 punktów i wyżej za kawy najwyższej jakości.
+Celem tej analizy jest określenie, który kraj produkuje najlepszą kawę. Ze względu na dużą liczbę krajów w naszym zbiorze danych, na początek wykluczymy te, które mają mniej niż 30 obserwacji, ponieważ ich obecność mogłaby prowadzić do mniej wiarygodnych wniosków. Dodatkowo, skoncentrujemy się na krajach, których średnia punktacja "Total.Cup.Points" wynosi co najmniej 82 punkty, ponieważ międzynarodowe standardy uznają kawy oceniane na minimum 80 punktów za produkty najwyższej jakości.
 
 
 ```{r, echo=FALSE}
