@@ -2,3 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+.idea/vcs.xml
+.idea/modules.xml
+.idea/misc.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/coffee-quality.iml
