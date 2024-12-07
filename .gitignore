@@ -7,3 +7,6 @@
 .idea/misc.xml
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/coffee-quality.iml
+/.quarto/
+.vscode
+coffee-quality_files
