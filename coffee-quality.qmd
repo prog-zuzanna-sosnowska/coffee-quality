@@ -87,8 +87,8 @@ library(ggplot2)
 library(reshape2)
 library(tidyverse)
 library(patchwork)
+library(GGally)
 library(knitr)
-library(countrycode)
 ```
 
 ```{r, echo=FALSE}
@@ -208,21 +208,6 @@ ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Co
 ```
 
 Powyższy wykres pokazuje dominację niektórych krajów w zestawieniu z innymi. Zauważmy, że najwięcej próbek pochodzi z Meksyku, Kolumbii i Gwatemali.
-
-```{r, echo=FALSE}
-data_clean$Continent <- countrycode(sourcevar = data_clean$Country.of.Origin,
-                            origin = "country.name",
-                            destination = "continent")
-# Przypisywanie kontynentu dla wierszy, gdzie krajem były Stany Zjednoczone (Puerto Rico) - funkcja wbudowana nie wykrywa Puerto Rico jako kraju
-
-data_clean[is.na(data_clean$Continent) & !is.na(data_clean$Country.of.Origin),]$Continent <- "Americas"
-
-ggplot(data_clean[!is.na(data_clean$Continent),], aes(x = Continent, y = Total.Cup.Points, fill = Continent)) +
-  geom_boxplot() +
-  labs(title = "Boxplot ocen ogólnych według kontynentów", x = "Kontynent", y = "Ocena ogólna") +
-  theme_minimal()
-
-```
 
 **4.2. Analiza - zmienne ciągłe**
 
