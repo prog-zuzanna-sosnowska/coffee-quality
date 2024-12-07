@@ -96,7 +96,6 @@ data <- head(data, -1)
 data[data == ""] <- NA
 ```
 
-
 ```{r, echo=FALSE}
 #Przesiewanie danych
 data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Sweetness", "altitude_mean_meters", "Total.Cup.Points")] |>
@@ -113,14 +112,15 @@ sum(is.na(data_clean$aroma))
 sum(is.na(data_clean$Sweetness))
 sum(is.na(data_clean$Total.Cup.Points))
 ```
+
 ## 4. Analiza danych
 
 **4.1.Statystyki opisowe**
 
 Zanim przejdziemy do głębszej analizy danych, zacznijmy od zaprezentowania podstawowych statystyk opisowych, które stanowią fundament każdej analizy. Statystyki te pozwalają na zrozumienie ogólnych właściwości badanych zmiennych i ułatwiają interpretację wyników.
 
-  **a) zmienne ciągłe**
-  
+**a) zmienne ciągłe**
+
 Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe oraz zakres wartości (minimalną i maksymalną) dla badanych parametrów.
 
 ```{r, echo = FALSE, results='hide'}
@@ -170,7 +170,6 @@ count_method <- table(data_clean$Processing.Method)
 count_country <- table(data_clean$Country.of.Origin)
 ```
 
-
 ```{r, echo = FALSE, message=FALSE}
 # Statystyki - zmienne ciągłe
 stats_description_a <- data.frame(
@@ -185,15 +184,14 @@ stats_description_a <- data.frame(
 kable(stats_description_a, format = "markdown", col.names = c("Zmienna", "Średnia", "Mediana", "Odch. Std.", "Min", "Max"))
 ```
 
-
 <br>
 
-  **b) zmienne kategoryczne**
-  
+**b) zmienne kategoryczne**
+
 Dla zmiennych kategorycznych przedstawiono na poniższych wykresach rozkład częstości występowania poszczególnych kategorii w badanych danych.
 
-  - **Processing.Method**
-  
+-   **Processing.Method**
+
 Przyjrzyjmy się najpierw liczbie wystąpień poszczególnych metod przetwarzania ziaren.
 
 ```{r, echo = FALSE}
@@ -202,10 +200,11 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = fct_infreq(Pr
   labs(title = "Częstość występowania metod przetwarzania ziaren kawy", x = "Metoda przetwarzania", y = "Liczba wystąpień") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
 ```
+
 Najczęściej stosowaną metodą przetwarzania ziaren kawy jest "washed/wet", tuż za nią znajduje się metoda "natural/dry". Choć ich popularność może sugerować, że prowadzą do wyższej jakości kawy, sama liczba wystąpień tych metod nie jest wystarczająca, aby jednoznacznie stwierdzić, czy rzeczywiście przekładają się one na lepszy produkt końcowy. Tego rodzaju zależności zostaną szczegółowo przeanalizowane w kolejnych częściach raportu.
 
-  - **Country.of.Origin**
-  
+-   **Country.of.Origin**
+
 Przyjrzyjmy się teraz wykresowi przedstawiającemu liczbę próbek kawy z poszczególnych krajów.
 
 ```{r, echo = FALSE}
@@ -214,7 +213,7 @@ ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Co
   labs(title = "Częstość występowania krajów pochodzenia ziaren kawy", x = "Kraj pochodzenia", y = "Liczba wystąpień") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
 ```
- 
+
 Widać wyraźną dominację niektórych państw, takich jak Meksyk, Kolumbia czy Gwatemala, w porównaniu do innych. Należy jednak pamiętać, że dane o kraju pochodzenia ziaren nie pozwalają na wyciągnięcie jednoznacznych wniosków o jakości kawy z tych regionów. Choć Meksyk pojawia się częściej w badaniach, nie można na tej podstawie stwierdzić, że jego kawa jest lepsza niż ta pochodząca z Japonii. To zagadnienie również zostanie szczegółowo przeanalizowane w dalszej części raportu.
 
 **4.2. Analiza - zmienne ciągłe**
@@ -243,12 +242,9 @@ plot_flavour + plot_aroma
 
 **4.3. Analiza - zmienne kategoryczne**
 
-
 ```{r, echo = FALSE}
 ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Method, y = Total.Cup.Points)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(x = "Metoda przetwarzania") +
   geom_boxplot()
 ```
-
-
