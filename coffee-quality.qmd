@@ -310,16 +310,13 @@ Celem tej analizy jest określenie, który kraj produkuje najlepszą kawę. Ze w
 
 
 ```{r, echo=FALSE}
-filtered_countries <- data_clean %>%
-  filter(!is.na(Country.of.Origin) & !is.na(Total.Cup.Points)) %>%  # 
+filtered_data <- data_clean %>%
+  filter(!is.na(Country.of.Origin) & !is.na(Total.Cup.Points)) %>%
   group_by(Country.of.Origin) %>%
   summarise(Średnia = mean(Total.Cup.Points, na.rm = TRUE),
-    Liczba_Obserwacji = n()) %>%
+            Liczba_Obserwacji = n()) %>%
   filter(Średnia >= 82 & Liczba_Obserwacji >= 30) %>%
-  pull(Country.of.Origin) 
-
-filtered_data <- data_clean %>%
-  filter(Country.of.Origin %in% filtered_countries)
+  inner_join(data_clean, by = "Country.of.Origin")
 
 ggplot(data = filtered_data, aes(x = Country.of.Origin, y = Total.Cup.Points)) +
   geom_boxplot() +
