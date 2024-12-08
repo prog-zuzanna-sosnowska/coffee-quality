@@ -220,11 +220,19 @@ kable(stats_description_a, format = "markdown", col.names = c("Zmienna", "Średn
 
 Zauważmy kilka faktów:
 
--   Dla zmiennych **Flavor, Aroma, Acidity, Aftertaste** różnice pomiędzy *medianą a średnią* wynoszą odpowiednio 0.056, 0.01, 0.039, 0.017 i we wszystkich przypadkach średnia arytmetyczna jest mniejsza od mediany. Świadczy to prawdopodobnie **o symetrii rozkładu** lub delikatnej lewostronnej skośności. Co więcej estymowana wartość skośności również sugeruje symetrię układu, ponieważ jest nieznacznie różna od zera. Dla zmiennej **Total.Cup.Points** różnica między medianą a średnią również jest mała, jednak wartość estymatora skośności mniejsza od -1 sugeruje **lewostronną skośność rozkładu.**
+-   Dla zmiennych **Flavor**, **Aroma**, **Acidity** i **Aftertaste** różnice między medianą a średnią są niewielkie (odpowiednio: 0.056, 0.01, 0.039, 0.017), a w każdym przypadku średnia jest nieco niższa od mediany. Taki układ wskazuje na niemal symetryczny rozkład lub delikatną skośność lewostronną. Dodatkowo, wartość estymowanej skośności jest bliska zeru, co również potwierdza, że rozkłady te są zbliżone do symetrycznych i ewentualne odchylenia są minimalne.
 
--   Dla parametrów **Flavor, Aroma, Acidity, Aftertaste** *odchylenie standardowe* wynosi w zaokrągleniu **0.3** i oznacza to, że większość obserwacji znajduje się w przedziale około **7.2–7.8**. To bardzo wąski przedział w kontekście pełnego zakresu 0–10. Podobnie dla rozstępu z próby różnica pomiędzy wartością najmniejszą a największą dla zadanych cech wynosi kolejno 2.75, 3.67, 3.5, 2.5.
+    Dla zmiennej **Total.Cup.Points** różnica między medianą a średnią również jest niewielka, ale wartość estymatora skośności poniżej -1 wskazuje na bardziej wyraźną lewostronną skośność. Oznacza to, że w tym przypadku rozkład jest lekko przesunięty, z dłuższym ogonem po stronie niższych wartości.
 
--   **Kurtoza** dla wszystkich cech jest **większa od 3**. Miara jaką jest kurtoza wskazuje nam, że dla zadane cechy mają rozkłady leptokurtyczne, tzn. ogony rozkładów są grube i intensywność wartości skrajnych jest większa niż dla rozkładu normalnego.
+    W przypadku zmiennej **Altitude** (wysokość uprawy) sytuacja jest odmienna: mediana jest znacznie mniejsza od średniej, co wskazuje na silną prawostronną skośność. Skośność przekraczająca wartość 20 wyraźnie potwierdza, że rozkład tej cechy jest zdecydowanie asymetryczny, z długim ogonem po stronie wyższych wartości.
+
+-   Dla zmiennych **Flavor**, **Aroma**, **Acidity** i **Aftertaste** odchylenie standardowe wynosi około **0.3**, co oznacza, że większość obserwacji jest skoncentrowana w wąskim zakresie wartości od około **7.2 do 7.8**. W porównaniu z pełnym zakresem możliwych wartości (0–10) wskazuje to na bardzo małą zmienność tych cech. Również analiza rozstępu próby (różnicy między wartością minimalną a maksymalną) dla tych parametrów pokazuje stosunkowo niewielkie rozproszenie: wynosi ono odpowiednio **2.75**, **3.67**, **3.5** i **2.5**.
+
+    Dla zmiennej **Total.Cup.Points** (ogólnej oceny kawy) odchylenie standardowe wynosi **2.686**, co w odniesieniu do pełnego zakresu **0–100** jest stosunkowo niską wartością. Wskazuje to, że ogólna ocena kawy również charakteryzuje się umiarkowaną zmiennością.
+
+    Natomiast dla cechy **Altitude** (wysokości uprawy) zarówno odchylenie standardowe, jak i rozstęp z próby przyjmują znacznie większe wartości w relacji do średniej wynoszącej **1784.551**. Świadczy to o dużym rozproszeniu danych w tym przypadku, co oznacza, że wysokości upraw kawy są znacznie bardziej zróżnicowane niż pozostałe analizowane cechy.
+
+-   Kurtoza dla wszystkich analizowanych cech jest większa niż 3, co oznacza, że rozkłady tych zmiennych są **leptokurtyczne**. Takie rozkłady charakteryzują się "grubszymi" ogonami, co wskazuje na wyższą intensywność wartości skrajnych w porównaniu do rozkładu normalnego. W praktyce oznacza to, że w danych występuje większa liczba ekstremalnych obserwacji niż w przypadku klasycznego rozkładu normalnego.
 
 **b) zmienne kategoryczne**
 
@@ -251,6 +259,8 @@ ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Co
 ```
 
 Powyższy wykres pokazuje dominację niektórych krajów w zestawieniu z innymi. Zauważmy, że najwięcej próbek pochodzi z Meksyku, Kolumbii i Gwatemali.
+
+-   **Kontynent**
 
 ```{r, echo=FALSE}
 # Zmiana nazwy kraju pochodzenia kawy w celu 
@@ -300,6 +310,34 @@ W tej części postaramy się zbadać jak cechy takie jak (`Flavor`), (`Aroma`),
 **4.3.1. Wpływ zmiennych `Flavor`, `Aroma`, `Acidity`, `Aftertaste`**
 
 ```{r, echo=FALSE}
+aftertaste_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aftertaste)) + 
+    geom_point(col = "#00FF00") + 
+    geom_smooth(span = 0.2, col = "black") +
+    labs(x = "Ocena kawy", y = "Ocena posmaku")
+  
+flavor_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Flavor)) + 
+    geom_point(col = "#FC4E07") + 
+    geom_smooth(span = 0.2, col = "black") +
+  labs(x = "Ocena kawy", y = "Ocena smaku")
+
+acidity_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Acidity)) + 
+    geom_point(col = "#E7B800") + 
+    geom_smooth(span = 0.2, col = "black") +
+  labs(x = "Ocena kawy", y = "Ocena kwasowości")
+
+aroma_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aroma)) + 
+    geom_point(col = "#00AFBB") + 
+    geom_smooth(span = 0.2, col = "black") + 
+  labs(x = "Ocena kawy", y = "Ocena aromatu")
+
+  
+
+(aftertaste_cor | flavor_cor) / (acidity_cor | aroma_cor) + plot_annotation(
+  title = "Zależność między ogólną oceną kawy a poszczególnymi cechami")
+```
+Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować zależność ta jest monotoniczna, dlatego estymowana wartość korelacji dla estymatora korelacji Spearmanna powinna przyjmować wartości dodatnie.
+
+```{r, echo=FALSE}
 plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
   # geom_bar(fill = "lightblue") +
   geom_density(fill = "lightblue") + 
@@ -331,7 +369,7 @@ plot_aftertaste <- ggplot(data_clean, aes(x = Aftertaste)) +
 (plot_flavour + plot_aroma) / (plot_acidity + plot_aftertaste)
 ```
 
-Na załączonych powyżej wykresach przedstawiony został rozkład dla zmiennych kategorycznych definiujących smak kawy (Flavor), zapach/aromat kawy (Aroma), kwasowość (Acidity) oraz posmak czyli wrażenia ogólne po spożyciu kawy (Aftertaste).
+Powyższe wykresy estymują gęstość rozkładów dla poszczególnych zmiennych ciągłych. Jak możemy zauważyć,
 
 ```{r, echo = FALSE}
 cor_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Moisture", "altitude_mean_meters", "Total.Cup.Points")]
@@ -359,11 +397,6 @@ Zauważalna jest bardzo słaba korelacja między zmiennymi Moisture i Altitude �
 Najsilniejsze korelacje z ogólną oceną kawy (Total.Cup.Points) występują dla parametrów Flavor i Aftertaste – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.
 
 Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.
-
-```{r, echo=FALSE}
-scatterplot_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Total.Cup.Points")]
-ggpairs(scatterplot_data, axisLabels = "show")
-```
 
 **4.3. Analiza - zmienne kategoryczne**
 
