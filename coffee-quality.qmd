@@ -79,7 +79,9 @@ W ramach analizy postaramy się odpowiedzieć na następujące pytania badawcze:
 
 -   Czy wysokość, na której uprawiana jest kawa, ma istotny wpływ na jej jakość ocenianą sensorycznie?
 
--   Jak oceny sensoryczne kaw różnią się w zależności od kraju pochodzenia i metody przetwarzania?
+-   Jak oceny sensoryczne kaw różnią się w zależności od metody przetwarzania?
+
+-   Który kraj może pochwalić się tytułem mistrza w produkcji kawy?
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # Wczytane pakiety
@@ -378,6 +380,17 @@ ggplot(data = filtered_data, aes(x = Country.of.Origin, y = Total.Cup.Points, fi
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.title = element_text(hjust = 0.5)) +
-  labs(x = "Kraj pochodzenia", y = "Total Cup Points")
+  labs(x = "Kraj pochodzenia", y = "Total Cup Points")+
+  geom_hline(yintercept = 82.5, linetype = "dashed", color = "black")
 
 ```
+Dzięki przeprowadzonej selekcji wyróżniły się kraje, które mogą być uznane za czołowych producentów kawy. Etiopia zdecydowanie dominuje, osiągając najwyższą medianę punktacji "Total.Cup.Points". Dodatkowo, w tej grupie brak jest wartości odstających, a zakres górnego wąsa boxplota (czyli najwyższy uzyskany wynik) jest większy niż w przypadku innych krajów. Na podstawie tych wyników można przypuszczać, że Etiopia produkuje kawę o najwyższej jakości.
+
+Podobnie, kraje takie jak Kolumbia i Kostaryka również wyróżniają się wysokimi wynikami. Choć Kolumbia ma wartości odstające poniżej dolnego rozkładu, jej rozstęp międzykwartylowy (IQR) jest stosunkowo mały, co sugeruje, że większość próbek charakteryzuje się podobnie wysoką jakością. Kostaryka, z medianą powyżej 82 punktów, również zalicza się do czołowych producentów kawy.
+
+Ciekawym przypadkiem jest Meksyk, który mimo największej liczby próbek (*rozdział 4.1.2, podpunkt b)*) nie znalazł się wśród krajów o najwyższej jakości kawie. Wynika to z niższych wyników "Total.Cup.Points", co wyklucza go z rankingu najlepszych producentów.
+
+Co więcej, wyniki uzyskane w tej analizie są zgodne z międzynarodowymi rankingami producentów kawy. Przykładowo, wyszukując w internecie rankingi krajów słynących z najlepszej kawy, łatwo natrafimy na te same kraje, które znalazły się w naszej analizie: Brazylia, Kolumbia, Etiopia, Gwatemala oraz Kostaryka. Wszystkie te kraje pojawiają się na przedstawionym wykresie boxplot.
+
+
+## 5. Podsumowanie
