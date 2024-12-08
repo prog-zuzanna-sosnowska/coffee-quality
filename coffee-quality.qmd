@@ -91,6 +91,8 @@ library(knitr)
 library(countrycode)
 library(GGally)
 library(psych)
+library(moments)
+library(statpsych)
 ```
 
 ```{r, echo=FALSE}
@@ -126,7 +128,7 @@ Zanim przejdziemy do głębszej analizy danych, zacznijmy od zaprezentowania pod
 
 **a) zmienne ciągłe**
 
-Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe oraz zakres wartości (minimalną i maksymalną) dla badanych parametrów.
+Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe, skośność, kurtozę oraz rozstęp z próby dla badanych parametrów.
 
 ```{r, echo = FALSE, results='hide'}
 #Statystyki opisowe
@@ -137,6 +139,8 @@ median_flavor <- median(data_clean$Flavor, na.rm = TRUE)
 sd_flavor <- sd(data_clean$Flavor, na.rm = TRUE)
 min_flavor <- min(data_clean$Flavor, na.rm = TRUE)  
 max_flavor <- max(data_clean$Flavor, na.rm = TRUE)
+skew_flavor <- skewness(data_clean$Flavor, na.rm = TRUE)
+kurt_flavor <- kurtosis(data_clean$Flavor, na.rm = TRUE)
 rozrzut_flavor <- max_flavor - min_flavor
 
 #Aroma
@@ -145,7 +149,29 @@ median_aroma <- median(data_clean$Aroma, na.rm = TRUE)
 sd_aroma <- sd(data_clean$Aroma, na.rm = TRUE)
 min_aroma <- min(data_clean$Aroma, na.rm = TRUE)  
 max_aroma <- max(data_clean$Aroma, na.rm = TRUE)
+skew_aroma <- skewness(data_clean$Aroma, na.rm = TRUE)
+kurt_aroma <- kurtosis(data_clean$Aroma, na.rm = TRUE)
 rozrzut_aroma <- max_aroma - min_aroma
+
+#Acidity
+mean_acidity <- mean(data_clean$Acidity, na.rm = TRUE)
+median_acidity <- median(data_clean$Acidity, na.rm = TRUE)
+sd_acidity <- sd(data_clean$Acidity, na.rm = TRUE)
+min_acidity <- min(data_clean$Acidity, na.rm = TRUE)  
+max_acidity <- max(data_clean$Acidity, na.rm = TRUE)
+skew_acidity <- skewness(data_clean$Acidity, na.rm = TRUE)
+kurt_acidity <- kurtosis(data_clean$Acidity, na.rm = TRUE)
+rozrzut_acidity <- max_acidity - min_acidity
+
+#Aftertaste
+mean_aftertaste <- mean(data_clean$Aftertaste, na.rm = TRUE)
+median_aftertaste <- median(data_clean$Aftertaste, na.rm = TRUE)
+sd_aftertaste <- sd(data_clean$Aftertaste, na.rm = TRUE)
+min_aftertaste <- min(data_clean$Aftertaste, na.rm = TRUE)  
+max_aftertaste <- max(data_clean$Aftertaste, na.rm = TRUE)
+skew_aftertaste <- skewness(data_clean$Aftertaste, na.rm = TRUE)
+kurt_aftertaste <- kurtosis(data_clean$Aftertaste, na.rm = TRUE)
+rozrzut_aftertaste <- max_aftertaste - min_aftertaste
 
 
 #Altitude
@@ -154,6 +180,9 @@ median_altitude <- median(data_clean$altitude_mean_meters, na.rm = TRUE)
 sd_altitude <- sd(data_clean$altitude_mean_meters, na.rm = TRUE)
 min_altitude <- min(data_clean$altitude_mean_meters, na.rm = TRUE)  
 max_altitude <- max(data_clean$altitude_mean_meters, na.rm = TRUE)
+skew_altitude <- skewness(data_clean$altitude_mean_meters, na.rm = TRUE)
+kurt_altitude <- kurtosis(data_clean$altitude_mean_meters, na.rm = TRUE)
+rozrzut_altitude <- max_altitude - min_altitude
 
 #Total.Cup.Points
 mean_points <- mean(data_clean$Total.Cup.Points, na.rm = TRUE)
@@ -161,6 +190,9 @@ median_points <- median(data_clean$Total.Cup.Points, na.rm = TRUE)
 sd_points <- sd(data_clean$Total.Cup.Points, na.rm = TRUE)
 min_points <- min(data_clean$Total.Cup.Points, na.rm = TRUE)  
 max_points <- max(data$Total.Cup.Points, na.rm = TRUE)
+skew_points <- skewness(data_clean$Total.Cup.Points, na.rm = TRUE)
+kurt_points <- kurtosis(data_clean$Total.Cup.Points, na.rm = TRUE)
+rozrzut_points <- max_points - min_points
 
 #Processing.Method
 count_method <- table(data_clean$Processing.Method)
@@ -172,18 +204,27 @@ count_country <- table(data_clean$Country.of.Origin)
 ```{r, echo = FALSE, message=FALSE}
 # Statystyki - zmienne ciągłe
 stats_description_a <- data.frame(
-  Zmienna = c("Flavor", "Aroma", "Total.Cup.Points", "Altitude [m]"),
-  Średnia = round(c(mean_flavor, mean_aroma, mean_points, mean_altitude), 3),
-  Mediana = round(c(median_flavor, median_aroma, median_points, median_altitude), 3),
-  Odchylenie.standardowe = round(c(sd_flavor, sd_aroma, sd_points, sd_altitude), 3),
-  Min = round(c(min_flavor, min_aroma, min_points, min_altitude), 3),
-  Max = round(c(max_flavor, max_aroma,max_points, max_altitude), 3)
+  Zmienna = c("Flavor", "Aroma", "Acidity", "Aftertaste", "Total.Cup.Points", "Altitude [m]"),
+  Średnia = round(c(mean_flavor, mean_aroma, mean_acidity, mean_aftertaste, mean_points, mean_altitude), 3),
+  Mediana = round(c(median_flavor, median_aroma, median_acidity, median_aftertaste, median_points, median_altitude), 3),
+  Odchylenie.standardowe = round(c(sd_flavor, sd_aroma, sd_acidity, sd_aftertaste,  sd_points, sd_altitude), 3),
+  Skośność = round(c(skew_flavor, skew_aroma, skew_acidity, skew_aftertaste, skew_points, skew_altitude), 3),
+  Kurtoza = round(c(kurt_flavor, kurt_aroma, kurt_acidity, kurt_aftertaste, kurt_points, kurt_altitude), 3),
+  Rozrzut = round(c(rozrzut_flavor, rozrzut_aroma, rozrzut_acidity, rozrzut_aftertaste, rozrzut_points, rozrzut_altitude), 3)
 )
 
-kable(stats_description_a, format = "markdown", col.names = c("Zmienna", "Średnia", "Mediana", "Odch. Std.", "Min", "Max"))
+kable(stats_description_a, format = "markdown", col.names = c("Zmienna", "Średnia", "Mediana", "Odch. Std.", "Skośność", "Kurtoza", "Rozstęp próby"))
 ```
 
 <br>
+
+Zauważmy kilka faktów:
+
+-   Dla zmiennych **Flavor, Aroma, Acidity, Aftertaste** różnice pomiędzy *medianą a średnią* wynoszą odpowiednio 0.056, 0.01, 0.039, 0.017 i we wszystkich przypadkach średnia arytmetyczna jest mniejsza od mediany. Świadczy to prawdopodobnie **o symetrii rozkładu** lub delikatnej lewostronnej skośności. Co więcej estymowana wartość skośności również sugeruje symetrię układu, ponieważ jest nieznacznie różna od zera. Dla zmiennej **Total.Cup.Points** różnica między medianą a średnią również jest mała, jednak wartość estymatora skośności mniejsza od -1 sugeruje **lewostronną skośność rozkładu.**
+
+-   Dla parametrów **Flavor, Aroma, Acidity, Aftertaste** *odchylenie standardowe* wynosi w zaokrągleniu **0.3** i oznacza to, że większość obserwacji znajduje się w przedziale około **7.2–7.8**. To bardzo wąski przedział w kontekście pełnego zakresu 0–10. Podobnie dla rozstępu z próby różnica pomiędzy wartością najmniejszą a największą dla zadanych cech wynosi kolejno 2.75, 3.67, 3.5, 2.5.
+
+-   **Kurtoza** dla wszystkich cech jest **większa od 3**. Miara jaką jest kurtoza wskazuje nam, że dla zadane cechy mają rozkłady leptokurtyczne, tzn. ogony rozkładów są grube i intensywność wartości skrajnych jest większa niż dla rozkładu normalnego.
 
 **b) zmienne kategoryczne**
 
@@ -252,6 +293,10 @@ Na podstawie powyższego wykresu pudełkowego można zauważyć, że **mediana o
 Dla Ameryki i Azji mediana ocen jest na zbliżonym poziomie. W przypadku Ameryki wykres pokazuje dłuższe wąsy, co wskazuje na większe rozproszenie danych – kawa pochodząca z tego regionu może być zarówno bardzo dobrej jakości, jak i przeciętnej. Natomiast w Azji wąsy są krótsze niż w Ameryce, co sugeruje mniejszą zmienność w ocenach kawy. Azjatycka kawa charakteryzuje się nieco niższą medianą, ale bardziej jednorodnymi ocenami w porównaniu do kawy z Ameryki.
 
 **4.2. Analiza - zmienne ciągłe**
+
+W tej części postaramy się zbadać jak cechy takie jak (`Flavor`), (`Aroma`), (`Acidity`), (`Aftertaste`), (`Moisture`) czy (`Altitude`) wpływają na ogólny smak kawy.
+
+**4.3.1. Wpływ zmiennych `Flavor`, `Aroma`, `Acidity`, `Aftertaste`**
 
 ```{r, echo=FALSE}
 plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
