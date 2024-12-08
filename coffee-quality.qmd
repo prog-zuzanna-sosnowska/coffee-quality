@@ -89,6 +89,8 @@ library(tidyverse)
 library(patchwork)
 library(knitr)
 library(countrycode)
+library(GGally)
+library(psych)
 ```
 
 ```{r, echo=FALSE}
@@ -210,19 +212,44 @@ ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Co
 Powyższy wykres pokazuje dominację niektórych krajów w zestawieniu z innymi. Zauważmy, że najwięcej próbek pochodzi z Meksyku, Kolumbii i Gwatemali.
 
 ```{r, echo=FALSE}
-data_clean$Continent <- countrycode(sourcevar = data_clean$Country.of.Origin,
-                            origin = "country.name",
-                            destination = "continent")
-# Przypisywanie kontynentu dla wierszy, gdzie krajem były Stany Zjednoczone (Puerto Rico) - funkcja wbudowana nie wykrywa Puerto Rico jako kraju
+data_clean$Country.of.Origin <- ifelse(
+  data_clean$Country.of.Origin == "United States (Puerto Rico)",
+  "Puerto Rico",
+  data_clean$Country.of.Origin
+)
 
-data_clean[is.na(data_clean$Continent) & !is.na(data_clean$Country.of.Origin),]$Continent <- "Americas"
+# Dodanie niestandardowego przypisania dla Puerto Rico
+custom_matches <- c("Puerto Rico" = "Americas")
 
-ggplot(data_clean[!is.na(data_clean$Continent),], aes(x = Continent, y = Total.Cup.Points, fill = Continent)) +
-  geom_boxplot() +
-  labs(title = "Boxplot ocen ogólnych według kontynentów", x = "Kontynent", y = "Ocena ogólna") +
+data_clean$Continent <- countrycode(
+  sourcevar = data_clean$Country.of.Origin,
+  origin = "country.name",
+  destination = "continent",
+  custom_match = custom_matches
+)
+
+# Analiza kontynentów
+continent_data <- data_clean %>%
+  filter(!is.na(Continent) & !is.na(Total.Cup.Points)) %>%
+  group_by(Continent) %>%
+  summarise(
+    Średnia = mean(Total.Cup.Points, na.rm = TRUE),
+    Liczba_Obserwacji = n()
+  ) %>%
+  filter(Liczba_Obserwacji >= 30) %>%
+  inner_join(data_clean, by = "Continent")
+
+
+ggplot(continent_data, aes(x = Continent, y = Total.Cup.Points, fill = Continent)) +
+  geom_boxplot(width=0.35,  staplewidth=0.25,coef=3) +
+  labs(title = "Boxplot ocen ogólnych według kontynentów", x = "Kontynent", y = "Ocena ogólna", caption="Wartości nietypowe zdefiniowano siatką Tukeya ze stałą 3") +
   theme_minimal()
 
 ```
+
+Na podstawie powyższego wykresu pudełkowego można zauważyć, że **mediana oceny ogólnej kawy jest najwyższa w przypadku Afryki**. Może to sugerować, że kraje afrykańskie produkują kawy o wyższej jakości. Dodatkowo, górny wąs wykresu dla Afryki przekracza wartość 90 i jest wyraźnie dłuższy niż dolny wąs. Świadczy to o dużym zróżnicowaniu w ocenach, z przewagą wyższych wartości, co oznacza, że kawa z Afryki częściej osiąga wyjątkowo wysokie oceny.
+
+Dla Ameryki i Azji mediana ocen jest na zbliżonym poziomie. W przypadku Ameryki wykres pokazuje dłuższe wąsy, co wskazuje na większe rozproszenie danych – kawa pochodząca z tego regionu może być zarówno bardzo dobrej jakości, jak i przeciętnej. Natomiast w Azji wąsy są krótsze niż w Ameryce, co sugeruje mniejszą zmienność w ocenach kawy. Azjatycka kawa charakteryzuje się nieco niższą medianą, ale bardziej jednorodnymi ocenami w porównaniu do kawy z Ameryki.
 
 **4.2. Analiza - zmienne ciągłe**
 
@@ -258,6 +285,8 @@ plot_aftertaste <- ggplot(data_clean, aes(x = Aftertaste)) +
 (plot_flavour + plot_aroma) / (plot_acidity + plot_aftertaste)
 ```
 
+Na załączonych powyżej wykresach przedstawiony został rozkład dla zmiennych kategorycznych definiujących smak kawy (Flavor), zapach/aromat kawy (Aroma), kwasowość (Acidity) oraz posmak czyli wrażenia ogólne po spożyciu kawy (Aftertaste).
+
 ```{r, echo = FALSE}
 cor_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Moisture", "altitude_mean_meters", "Total.Cup.Points")]
 
@@ -275,6 +304,19 @@ ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   labs(title = "Heatmapa korelacji", x = "", y = "")
+```
+
+Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (Aroma), kwasowością (Acidity), smakiem (Flavour), posmakiem (Aftertaste), wilgotnością ziaren (Moisture), wysokością upraw (altitude_mean_meters) oraz ogólną oceną kawy (Total.Cup.Points). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).
+
+Zauważalna jest bardzo słaba korelacja między zmiennymi Moisture i Altitude – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że **przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw**.
+
+Najsilniejsze korelacje z ogólną oceną kawy (Total.Cup.Points) występują dla parametrów Flavor i Aftertaste – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.
+
+Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.
+
+```{r, echo=FALSE}
+scatterplot_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Total.Cup.Points")]
+ggpairs(scatterplot_data, axisLabels = "show")
 ```
 
 **4.3. Analiza - zmienne kategoryczne**

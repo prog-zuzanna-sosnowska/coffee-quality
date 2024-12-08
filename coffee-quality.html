@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Analiza jakości kawy</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="coffee-quality_files/libs/clipboard/clipboard.min.js"></script>
+<script src="coffee-quality_files/libs/quarto-html/quarto.js"></script>
+<script src="coffee-quality_files/libs/quarto-html/popper.min.js"></script>
+<script src="coffee-quality_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="coffee-quality_files/libs/quarto-html/anchor.min.js"></script>
+<link href="coffee-quality_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="coffee-quality_files/libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="coffee-quality_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="coffee-quality_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="coffee-quality_files/libs/bootstrap/bootstrap-8a79a254b8e706d3c925cde0a310d4f0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Analiza jakości kawy</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Zuzanna Sosnowska, Jagoda Płócienniczak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="wstęp" class="level2">
+<h2 class="anchored" data-anchor-id="wstęp">1. Wstęp</h2>
+<p>Celem naszego sprawozdania jest analiza jakości kawy na podstawie cech związanych z jej charakterem sensorycznym, miejscem uprawy oraz metodą przetwarzania. Oceny kaw opierają się na różnych aspektach, takich jak aromat, smak, posmak czy kwasowość, które wspólnie tworzą końcową ocenę jakości wyrażoną w punktach (<code>Total.Cup.Points</code>).</p>
+<p>Analiza tych danych umożliwi lepsze zrozumienie, które cechy w największym stopniu wpływają na końcową ocenę jakości kawy. Ponadto przeanalizujemy, w jaki sposób takie czynniki jak wysokość upraw (<code>Altitude</code>), kraj pochodzenia (<code>Country.of.Origin</code>) oraz metoda przetwarzania (<code>Processing.Method</code>) wpływają na różnice w wynikach oceny sensorycznej.</p>
+</section>
+<section id="pochodzenie-danych" class="level2">
+<h2 class="anchored" data-anchor-id="pochodzenie-danych">2. Pochodzenie danych</h2>
+<p>Dane pochodzą z bazy Coffee Quality Database (styczeń 2018), prowadzonej przez Coffee Quality Institute (CQI), organizację non-profit zajmującą się oceną i poprawą jakości kawy na świecie. Oryginalne dane zostały pozyskane ze strony internetowej CQI (<a href="https://database.coffeeinstitute.org">database.coffeeinstitute.org</a>) za pomocą narzędzi web scrapingowych, takich jak Selenium i Beautiful Soup. Zbiór danych, który analizujemy w dalszej części sprawozdania, pochodzi z platformy Kaggle i stanowi wersję przetworzoną – zawiera zarówno surowe dane (takie jak pobrano z CQI), jak i dane oczyszczone, w których ujednolicono formaty i jednostki miar dla wybranych zmiennych.</p>
+<p><strong>2.1. Licencja danych</strong><br>
+Dane na Kaggle zostały udostępnione jako część projektu opublikowanego przez użytkownika GitHub z zastosowaniem licencji MIT. Licencja ta pozwala na swobodne wykorzystanie danych, również w celach edukacyjnych, o ile zachowana zostanie informacja o oryginalnym źródle. Warto jednak zaznaczyć, że pierwotne dane z CQI nie mają określonej licencji, co sugeruje konieczność ich wykorzystania z zachowaniem ostrożności, szczególnie w kontekstach komercyjnych.</p>
+</section>
+<section id="opis-zmiennych" class="level2">
+<h2 class="anchored" data-anchor-id="opis-zmiennych">3. Opis zmiennych</h2>
+<p>Dane, które analizujemy, obejmują szeroki zakres informacji dotyczących jakości kawy, w tym jej cech sensorycznych, metadanych związanych z ziarnami oraz szczegółów dotyczących farm, z których pochodzi. Zebrane informacje zostały podzielone na kilka kategorii. Poniżej przedstawiamy szczegółowy opis dostępnych zmiennych:</p>
+<p><strong>3.1. Miary jakości kawy (Quality Measures)</strong></p>
+<ul>
+<li><p><strong>Aroma (aromat)</strong> – ocena zapachu kawy, w skali od 0 do 10 punktów. Wysoka ocena wskazuje na intensywny, przyjemny aromat.</p></li>
+<li><p><strong>Flavor (smak)</strong> – ocena smaku kawy, w skali od 0 do 10 punktów. Uwzględnia harmonię i intensywność smaków.</p></li>
+<li><p><strong>Aftertaste (posmak)</strong> – ocena wrażeń smakowych po spożyciu kawy, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Acidity (kwasowość)</strong> – ocena poziomu i charakteru kwasowości kawy, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Body (konsystencja)</strong> – ocena wrażeń związanych z ciężkością i teksturą kawy, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Balance (balans)</strong> – ocena harmonii pomiędzy różnymi cechami sensorycznymi, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Uniformity (jednorodność)</strong> – wskaźnik spójności smaku pomiędzy filiżankami, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Cup Cleanliness (czystość smaku)</strong> – ocena obecności negatywnych nut smakowych, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Sweetness (słodycz)</strong> – ocena słodkich nut w kawie, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Moisture (wilgotność)</strong> – zawartość wody w ziarnach kawy, wyrażona w procentach.</p></li>
+<li><p><strong>Defects (wady)</strong> – liczba defektów w próbce kawy, co może wpływać negatywnie na jej jakość.</p></li>
+</ul>
+<p><strong>3.2. Metadane o ziarnach kawy (Bean Metadata)</strong></p>
+<ul>
+<li><p><strong>Processing.Method (metoda przetwarzania)</strong> – sposób przetwarzania ziaren kawy (np. „natural”, „washed”).</p></li>
+<li><p><strong>Color (kolor)</strong> – kolor ziaren kawy (np. „green”, „yellow”).</p></li>
+<li><p><strong>Species (gatunek)</strong> – gatunek kawy: arabica lub robusta.</p></li>
+</ul>
+<p><strong>3.3. Metadane o farmach (Farm Metadata)</strong></p>
+<ul>
+<li><p><strong>Owner (właściciel)</strong> – nazwa właściciela farmy.</p></li>
+<li><p><strong>Country.of.Origin (kraj pochodzenia)</strong> – kraj, z którego pochodzi kawa.</p></li>
+<li><p><strong>Farm.Name (nazwa farmy)</strong> – nazwa farmy, na której uprawiana była kawa.</p></li>
+<li><p><strong>Lot.Number (numer partii)</strong> – numer partii kawy.</p></li>
+<li><p><strong>Mill (młyn)</strong> – nazwa młyna, w którym przetwarzano kawę.</p></li>
+<li><p><strong>Company (firma)</strong> – firma zajmująca się dystrybucją kawy.</p></li>
+<li><p><strong>Altitude (wysokość upraw)</strong> – wysokość, na której uprawiana jest kawa, wyrażona w metrach nad poziomem morza.</p></li>
+<li><p><strong>Region (region)</strong> – region, w którym znajduje się farma.</p></li>
+</ul>
+<p>Ze względu na obszerność danych, do szczegółowej analizy wybierzemy te zmienne, które naszym zdaniem mają największy wpływ na jakość kawy (<code>Flavor</code>,<code>Aroma</code>, <code>Processing.Method</code>) oraz te, które wzbudziły naszą ciekawość (<code>Country.Of.Origin</code>, <code>altitude_mean_meters</code>). Dzięki temu będziemy mogli skoncentrować się na kluczowych aspektach, które umożliwią wyciągnięcie trafnych i precyzyjnych wniosków.</p>
+<p>Postaramy się również odpowiedzieć na następujące pytania badawcze:</p>
+<ul>
+<li><p>Jakie cechy sensoryczne (np. aromat, smak) mają największy wpływ na ogólną ocenę jakości kawy (<code>Total.Cup.Points</code>)?</p></li>
+<li><p>Czy wysokość, na której uprawiana jest kawa (<code>Altitude</code>), ma istotny wpływ na jej jakość ocenianą sensorycznie?</p></li>
+<li><p>Jak oceny sensoryczne kaw różnią się w zależności od kraju pochodzenia (<code>Country.of.Origin</code>) i metody przetwarzania (<code>Processing.Method</code>)?</p></li>
+</ul>
+</section>
+<section id="analiza-danych" class="level2">
+<h2 class="anchored" data-anchor-id="analiza-danych">4. Analiza danych</h2>
+<p><strong>4.1.Statystyki opisowe</strong></p>
+<p>Zanim przejdziemy do głębszej analizy danych, zacznijmy od zaprezentowania podstawowych statystyk opisowych, które stanowią fundament każdej analizy. Statystyki te pozwolą na zrozumienie ogólnych właściwości badanych zmiennych i ułatwią interpretację końcowych wyników.</p>
+<p><strong>a) zmienne ciągłe</strong></p>
+<p>Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe oraz zakres wartości (minimalną i maksymalną) dla badanych parametrów.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Zmienna</th>
+<th style="text-align: right;">Średnia</th>
+<th style="text-align: right;">Mediana</th>
+<th style="text-align: right;">Odch. Std.</th>
+<th style="text-align: right;">Min</th>
+<th style="text-align: right;">Max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Flavor</td>
+<td style="text-align: right;">7.524</td>
+<td style="text-align: right;">7.58</td>
+<td style="text-align: right;">0.342</td>
+<td style="text-align: right;">6.08</td>
+<td style="text-align: right;">8.83</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Aroma</td>
+<td style="text-align: right;">7.570</td>
+<td style="text-align: right;">7.58</td>
+<td style="text-align: right;">0.316</td>
+<td style="text-align: right;">5.08</td>
+<td style="text-align: right;">8.75</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total.Cup.Points</td>
+<td style="text-align: right;">82.179</td>
+<td style="text-align: right;">82.50</td>
+<td style="text-align: right;">2.686</td>
+<td style="text-align: right;">59.83</td>
+<td style="text-align: right;">90.58</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Altitude [m]</td>
+<td style="text-align: right;">1784.551</td>
+<td style="text-align: right;">1310.64</td>
+<td style="text-align: right;">8771.059</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">190164.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
+<p><strong>b) zmienne kategoryczne</strong></p>
+<p>Dla zmiennych kategorycznych przedstawiono na poniższych wykresach rozkład częstości występowania poszczególnych kategorii w badanych danych.</p>
+<ul>
+<li><strong>Processing.Method</strong></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Najczęściej stosowaną metodą przetwarzania ziaren kawy jest “washed/wet”, a zaraz za nią plasuje się metoda “natural/dry”. Wysoka popularność tych metod rodzi pytanie, czy są one związane z wyższą jakością kawy. Choć na podstawie samej częstości ich występowania nie możemy tego jednoznacznie stwierdzić, stanowi to punkt wyjścia do dalszej analizy. Hipoteza ta zostanie szczegółowo zbadana w kolejnych częściach raportu (<em>rozdział 4.3.</em>).</p>
+<ul>
+<li><strong>Country.of.Origin</strong></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Powyższy wykres pokazuje dominację niektórych krajów w zestawieniu z innymi. Zauważmy, że najwięcej próbek pochodzi z Meksyku, Kolumbii i Gwatemali.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Some values were not matched unambiguously: United States (Puerto Rico)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Some strings were matched more than once, and therefore set to &lt;NA&gt; in the result: United States (Puerto Rico),Americas,Americas</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>4.2. Analiza - zmienne ciągłe</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>4.3. Analiza - zmienne kategoryczne</strong></p>
+<p>W tej części skupimy się na analizie jak zmienne <code>Processing.Method</code> i <code>Country.of.Origin</code> wpływają na oceny sensoryczne, a w ostateczności na końcową ewaluację smaku kawy.</p>
+<p><strong>4.3.1. Wpływ zmiennej <code>Processing.Method</code></strong></p>
+<p>W <em>rozdziale 4.1. b)</em> zauważyliśmy, że metoda “Washed/Wet” przeważa liczebnie wśród badanych technik przetwarzania ziaren kawy. Teraz, przechodząc do analizy, przyjrzymy się, jak różne metody wpływają na sensoryczne oceny kawy, takie jak “Flavor” (<em>wykres a</em>) oraz “Aroma” (<em>wykres b</em>), a także na ogólną jakość kawy, wyrażoną poprzez “Total.Cup.Points” (<em>wykres c</em>). W tej części skupimy się na szczegółowej interpretacji tych wyników, uwzględniając również liczebność próbek, aby formułowane wnioski były jak najbardziej trafne i rzetelne.</p>
+<p><strong>a)</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>b)</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>c)</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>4.3.2. Wpływ zmiennej <code>Country.of.Origin</code></strong></p>
+<p>Celem tej analizy jest określenie, który kraj produkuje najlepszą kawę. Ze względu na dużą liczbę krajów w naszym zbiorze danych, na początek wykluczymy te, które mają mniej niż 30 obserwacji, ponieważ ich obecność mogłaby prowadzić do mniej wiarygodnych wniosków. Dodatkowo, skoncentrujemy się na krajach, których średnia punktacja “Total.Cup.Points” wynosi co najmniej 82 punkty, ponieważ międzynarodowe standardy uznają kawy oceniane na minimum 80 punktów za produkty najwyższej jakości.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
