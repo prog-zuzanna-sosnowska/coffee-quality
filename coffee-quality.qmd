@@ -253,6 +253,7 @@ ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Co
 Powyższy wykres pokazuje dominację niektórych krajów w zestawieniu z innymi. Zauważmy, że najwięcej próbek pochodzi z Meksyku, Kolumbii i Gwatemali.
 
 ```{r, echo=FALSE}
+# Zmiana nazwy kraju pochodzenia kawy w celu 
 data_clean$Country.of.Origin <- ifelse(
   data_clean$Country.of.Origin == "United States (Puerto Rico)",
   "Puerto Rico",

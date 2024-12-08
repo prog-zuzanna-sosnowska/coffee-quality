@@ -126,19 +126,18 @@ Dane na Kaggle zostały udostępnione jako część projektu opublikowanego prze
 <p><strong>4.1.Statystyki opisowe</strong></p>
 <p>Zanim przejdziemy do głębszej analizy danych, zacznijmy od zaprezentowania podstawowych statystyk opisowych, które stanowią fundament każdej analizy. Statystyki te pozwolą na zrozumienie ogólnych właściwości badanych zmiennych i ułatwią interpretację końcowych wyników.</p>
 <p><strong>a) zmienne ciągłe</strong></p>
-<p>Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe oraz zakres wartości (minimalną i maksymalną) dla badanych parametrów.</p>
+<p>Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe, skośność, kurtozę oraz rozstęp z próby dla badanych parametrów.</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 21%">
+<col style="width: 22%">
 <col style="width: 11%">
 <col style="width: 10%">
 <col style="width: 14%">
 <col style="width: 11%">
 <col style="width: 10%">
-<col style="width: 7%">
-<col style="width: 12%">
+<col style="width: 18%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -148,8 +147,7 @@ Dane na Kaggle zostały udostępnione jako część projektu opublikowanego prze
 <th style="text-align: right;">Odch. Std.</th>
 <th style="text-align: right;">Skośność</th>
 <th style="text-align: right;">Kurtoza</th>
-<th style="text-align: right;">Min</th>
-<th style="text-align: right;">Max</th>
+<th style="text-align: right;">Rozstęp próby</th>
 </tr>
 </thead>
 <tbody>
@@ -160,8 +158,7 @@ Dane na Kaggle zostały udostępnione jako część projektu opublikowanego prze
 <td style="text-align: right;">0.342</td>
 <td style="text-align: right;">-0.285</td>
 <td style="text-align: right;">4.615</td>
-<td style="text-align: right;">6.08</td>
-<td style="text-align: right;">8.83</td>
+<td style="text-align: right;">2.75</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Aroma</td>
@@ -170,8 +167,7 @@ Dane na Kaggle zostały udostępnione jako część projektu opublikowanego prze
 <td style="text-align: right;">0.316</td>
 <td style="text-align: right;">-0.422</td>
 <td style="text-align: right;">6.831</td>
-<td style="text-align: right;">5.08</td>
-<td style="text-align: right;">8.75</td>
+<td style="text-align: right;">3.67</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Acidity</td>
@@ -180,8 +176,7 @@ Dane na Kaggle zostały udostępnione jako część projektu opublikowanego prze
 <td style="text-align: right;">0.320</td>
 <td style="text-align: right;">-0.200</td>
 <td style="text-align: right;">5.696</td>
-<td style="text-align: right;">5.25</td>
-<td style="text-align: right;">8.75</td>
+<td style="text-align: right;">3.50</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Aftertaste</td>
@@ -190,8 +185,7 @@ Dane na Kaggle zostały udostępnione jako część projektu opublikowanego prze
 <td style="text-align: right;">0.350</td>
 <td style="text-align: right;">-0.343</td>
 <td style="text-align: right;">4.297</td>
-<td style="text-align: right;">6.17</td>
-<td style="text-align: right;">8.67</td>
+<td style="text-align: right;">2.50</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Total.Cup.Points</td>
@@ -200,8 +194,7 @@ Dane na Kaggle zostały udostępnione jako część projektu opublikowanego prze
 <td style="text-align: right;">2.686</td>
 <td style="text-align: right;">-1.837</td>
 <td style="text-align: right;">12.006</td>
-<td style="text-align: right;">59.83</td>
-<td style="text-align: right;">90.58</td>
+<td style="text-align: right;">30.75</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Altitude [m]</td>
@@ -210,14 +203,19 @@ Dane na Kaggle zostały udostępnione jako część projektu opublikowanego prze
 <td style="text-align: right;">8771.059</td>
 <td style="text-align: right;">20.058</td>
 <td style="text-align: right;">415.104</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">190164.00</td>
+<td style="text-align: right;">190163.00</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 <p><br></p>
+<p>Zauważmy kilka faktów:</p>
+<ul>
+<li><p>Dla zmiennych <strong>Flavor, Aroma, Acidity, Aftertaste</strong> różnice pomiędzy <em>medianą a średnią</em> wynoszą odpowiednio 0.056, 0.01, 0.039, 0.017 i we wszystkich przypadkach średnia arytmetyczna jest mniejsza od mediany. Świadczy to prawdopodobnie <strong>o symetrii rozkładu</strong> lub delikatnej lewostronnej skośności. Co więcej estymowana wartość skośności również sugeruje symetrię układu, ponieważ jest nieznacznie różna od zera. Dla zmiennej <strong>Total.Cup.Points</strong> różnica między medianą a średnią również jest mała, jednak wartość estymatora skośności mniejsza od -1 sugeruje <strong>lewostronną skośność rozkładu.</strong></p></li>
+<li><p>Dla parametrów <strong>Flavor, Aroma, Acidity, Aftertaste</strong> <em>odchylenie standardowe</em> wynosi w zaokrągleniu <strong>0.3</strong> i oznacza to, że większość obserwacji znajduje się w przedziale około <strong>7.2–7.8</strong>. To bardzo wąski przedział w kontekście pełnego zakresu 0–10. Podobnie dla rozstępu z próby różnica pomiędzy wartością najmniejszą a największą dla zadanych cech wynosi kolejno 2.75, 3.67, 3.5, 2.5.</p></li>
+<li><p><strong>Kurtoza</strong> dla wszystkich cech jest <strong>większa od 3</strong>. Miara jaką jest kurtoza wskazuje nam, że dla zadane cechy mają rozkłady leptokurtyczne, tzn. ogony rozkładów są grube i intensywność wartości skrajnych jest większa niż dla rozkładu normalnego.</p></li>
+</ul>
 <p><strong>b) zmienne kategoryczne</strong></p>
 <p>Dla zmiennych kategorycznych przedstawiono na poniższych wykresach rozkład częstości występowania poszczególnych kategorii w badanych danych.</p>
 <ul>
