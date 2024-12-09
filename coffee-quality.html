@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.33">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Analiza jakości kawy</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="coffee-quality_files/libs/clipboard/clipboard.min.js"></script>
+<script src="coffee-quality_files/libs/quarto-html/quarto.js"></script>
+<script src="coffee-quality_files/libs/quarto-html/popper.min.js"></script>
+<script src="coffee-quality_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="coffee-quality_files/libs/quarto-html/anchor.min.js"></script>
+<link href="coffee-quality_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="coffee-quality_files/libs/quarto-html/quarto-syntax-highlighting-07ba0ad10f5680c660e360ac31d2f3b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="coffee-quality_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="coffee-quality_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="coffee-quality_files/libs/bootstrap/bootstrap-b8d30c7eeda119d43de224048e70de8f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Analiza jakości kawy</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Zuzanna Sosnowska, Jagoda Płócienniczak </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="wstęp" class="level2">
+<h2 class="anchored" data-anchor-id="wstęp">1. Wstęp</h2>
+<p>Celem naszego sprawozdania jest analiza jakości kawy na podstawie cech związanych z jej charakterem sensorycznym, miejscem uprawy oraz metodą przetwarzania. Oceny kaw opierają się na różnych aspektach, takich jak aromat, smak, posmak czy kwasowość, które wspólnie tworzą końcową ocenę jakości wyrażoną w punktach (<code>Total.Cup.Points</code>).</p>
+<p>Analiza tych danych umożliwi lepsze zrozumienie, które cechy w największym stopniu wpływają na końcową ocenę jakości kawy. Ponadto przeanalizujemy, w jaki sposób takie czynniki jak wysokość upraw (<code>Altitude</code>), kraj pochodzenia (<code>Country.of.Origin</code>) oraz metoda przetwarzania (<code>Processing.Method</code>) wpływają na różnice w wynikach oceny sensorycznej.</p>
+</section>
+<section id="pochodzenie-danych" class="level2">
+<h2 class="anchored" data-anchor-id="pochodzenie-danych">2. Pochodzenie danych</h2>
+<p>Dane pochodzą z bazy Coffee Quality Database (styczeń 2018), prowadzonej przez Coffee Quality Institute (CQI), organizację non-profit zajmującą się oceną i poprawą jakości kawy na świecie. Oryginalne dane zostały pozyskane ze strony internetowej CQI (<a href="https://database.coffeeinstitute.org">database.coffeeinstitute.org</a>) za pomocą narzędzi web scrapingowych, takich jak Selenium i Beautiful Soup. Zbiór danych, który analizujemy w dalszej części sprawozdania, pochodzi z platformy Kaggle i stanowi wersję przetworzoną – zawiera zarówno surowe dane (takie jak pobrano z CQI), jak i dane oczyszczone, w których ujednolicono formaty i jednostki miar dla wybranych zmiennych.</p>
+<section id="licencja-danych" class="level3">
+<h3 class="anchored" data-anchor-id="licencja-danych">2.1. Licencja danych</h3>
+<p>Dane na Kaggle zostały udostępnione jako część projektu opublikowanego przez użytkownika GitHub z zastosowaniem licencji MIT. Licencja ta pozwala na swobodne wykorzystanie danych, również w celach edukacyjnych, o ile zachowana zostanie informacja o oryginalnym źródle. Warto jednak zaznaczyć, że pierwotne dane z CQI nie mają określonej licencji, co sugeruje konieczność ich wykorzystania z zachowaniem ostrożności, szczególnie w kontekstach komercyjnych.</p>
+</section>
+</section>
+<section id="opis-zmiennych" class="level2">
+<h2 class="anchored" data-anchor-id="opis-zmiennych">3. Opis zmiennych</h2>
+<p>Dane, które analizujemy, obejmują szeroki zakres informacji dotyczących jakości kawy, w tym jej cech sensorycznych, metadanych związanych z ziarnami oraz szczegółów dotyczących farm, z których pochodzi. Zebrane informacje zostały podzielone na kilka kategorii. Poniżej przedstawiamy szczegółowy opis dostępnych zmiennych:</p>
+<section id="miary-jakości-kawy-quality-measures" class="level3">
+<h3 class="anchored" data-anchor-id="miary-jakości-kawy-quality-measures">3.1. Miary jakości kawy (Quality Measures)</h3>
+<ul>
+<li><p><strong>Aroma (aromat)</strong> – ocena zapachu kawy, w skali od 0 do 10 punktów. Wysoka ocena wskazuje na intensywny, przyjemny aromat.</p></li>
+<li><p><strong>Flavor (smak)</strong> – ocena smaku kawy, w skali od 0 do 10 punktów. Uwzględnia harmonię i intensywność smaków.</p></li>
+<li><p><strong>Aftertaste (posmak)</strong> – ocena wrażeń smakowych po spożyciu kawy, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Acidity (kwasowość)</strong> – ocena poziomu i charakteru kwasowości kawy, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Body (konsystencja)</strong> – ocena wrażeń związanych z ciężkością i teksturą kawy, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Balance (balans)</strong> – ocena harmonii pomiędzy różnymi cechami sensorycznymi, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Uniformity (jednorodność)</strong> – wskaźnik spójności smaku pomiędzy filiżankami, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Cup Cleanliness (czystość smaku)</strong> – ocena obecności negatywnych nut smakowych, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Sweetness (słodycz)</strong> – ocena słodkich nut w kawie, w skali od 0 do 10 punktów.</p></li>
+<li><p><strong>Moisture (wilgotność)</strong> – zawartość wody w ziarnach kawy, wyrażona w procentach.</p></li>
+<li><p><strong>Defects (wady)</strong> – liczba defektów w próbce kawy, co może wpływać negatywnie na jej jakość.</p></li>
+</ul>
+</section>
+<section id="metadane-o-ziarnach-kawy-bean-metadata" class="level3">
+<h3 class="anchored" data-anchor-id="metadane-o-ziarnach-kawy-bean-metadata">3.2. Metadane o ziarnach kawy (Bean Metadata)</h3>
+<ul>
+<li><p><strong>Processing.Method (metoda przetwarzania)</strong> – sposób przetwarzania ziaren kawy (np. „natural”, „washed”).</p></li>
+<li><p><strong>Color (kolor)</strong> – kolor ziaren kawy (np. „green”, „yellow”).</p></li>
+<li><p><strong>Species (gatunek)</strong> – gatunek kawy: arabica lub robusta.</p></li>
+</ul>
+</section>
+<section id="metadane-o-farmach-farm-metadata" class="level3">
+<h3 class="anchored" data-anchor-id="metadane-o-farmach-farm-metadata">3.3. Metadane o farmach (Farm Metadata)</h3>
+<ul>
+<li><p><strong>Owner (właściciel)</strong> – nazwa właściciela farmy.</p></li>
+<li><p><strong>Country.of.Origin (kraj pochodzenia)</strong> – kraj, z którego pochodzi kawa.</p></li>
+<li><p><strong>Farm.Name (nazwa farmy)</strong> – nazwa farmy, na której uprawiana była kawa.</p></li>
+<li><p><strong>Lot.Number (numer partii)</strong> – numer partii kawy.</p></li>
+<li><p><strong>Mill (młyn)</strong> – nazwa młyna, w którym przetwarzano kawę.</p></li>
+<li><p><strong>Company (firma)</strong> – firma zajmująca się dystrybucją kawy.</p></li>
+<li><p><strong>Altitude (wysokość upraw)</strong> – wysokość, na której uprawiana jest kawa, wyrażona w metrach nad poziomem morza.</p></li>
+<li><p><strong>Region (region)</strong> – region, w którym znajduje się farma.</p></li>
+</ul>
+<p>Ze względu na obszerność dostępnych danych, do analizy wybrano kilka kluczowych parametrów, które mogą mieć istotny wpływ na jakość kawy (<code>Flavor</code>,<code>Aroma</code>, <code>Acidity</code>, <code>Aftertaste</code>, <code>Moisture</code>, <code>Processing.Method</code>, <code>Country.Of.Origin</code>, <code>altitude_mean_meters</code>). Skupienie się na tych aspektach pozwoli na bardziej precyzyjną analizę oraz wyciągnięcie trafnych i uzasadnionych wniosków.</p>
+<p>W ramach analizy postaramy się odpowiedzieć na następujące pytania badawcze:</p>
+<ul>
+<li><p>Jakie cechy sensoryczne (np. aromat, smak) mają największy wpływ na ogólną ocenę jakości kawy?</p></li>
+<li><p>Czy wysokość, na której uprawiana jest kawa, ma istotny wpływ na jej jakość ocenianą sensorycznie?</p></li>
+<li><p>Jak oceny sensoryczne kaw różnią się w zależności od metody przetwarzania?</p></li>
+<li><p>Który kraj może pochwalić się tytułem mistrza w produkcji kawy?</p></li>
+</ul>
+</section>
+</section>
+<section id="analiza-danych" class="level2">
+<h2 class="anchored" data-anchor-id="analiza-danych">4. Analiza danych</h2>
+<section id="statystyki-opisowe" class="level3">
+<h3 class="anchored" data-anchor-id="statystyki-opisowe">4.1. Statystyki opisowe</h3>
+<p>Zanim przejdziemy do szczegółowej analizy danych, warto zacząć od przedstawienia podstawowych statystyk opisowych. Stanowią one fundament każdej analizy, umożliwiając lepsze zrozumienie ogólnych cech badanych zmiennych oraz ułatwiając interpretację wyników końcowych.</p>
+<p><strong>4.1.1. zmienne ciągłe</strong></p>
+<p>Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe, skośność, kurtozę oraz rozstęp z próby dla badanych parametrów.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 14%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Zmienna</th>
+<th style="text-align: right;">Średnia</th>
+<th style="text-align: right;">Mediana</th>
+<th style="text-align: right;">Odch. Std.</th>
+<th style="text-align: right;">Skośność</th>
+<th style="text-align: right;">Kurtoza</th>
+<th style="text-align: right;">Rozstęp próby</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Flavor</td>
+<td style="text-align: right;">7.524</td>
+<td style="text-align: right;">7.58</td>
+<td style="text-align: right;">0.342</td>
+<td style="text-align: right;">-0.285</td>
+<td style="text-align: right;">4.615</td>
+<td style="text-align: right;">2.75</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Aroma</td>
+<td style="text-align: right;">7.570</td>
+<td style="text-align: right;">7.58</td>
+<td style="text-align: right;">0.316</td>
+<td style="text-align: right;">-0.422</td>
+<td style="text-align: right;">6.831</td>
+<td style="text-align: right;">3.67</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Acidity</td>
+<td style="text-align: right;">7.539</td>
+<td style="text-align: right;">7.50</td>
+<td style="text-align: right;">0.320</td>
+<td style="text-align: right;">-0.200</td>
+<td style="text-align: right;">5.696</td>
+<td style="text-align: right;">3.50</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Aftertaste</td>
+<td style="text-align: right;">7.403</td>
+<td style="text-align: right;">7.42</td>
+<td style="text-align: right;">0.350</td>
+<td style="text-align: right;">-0.343</td>
+<td style="text-align: right;">4.297</td>
+<td style="text-align: right;">2.50</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total.Cup.Points</td>
+<td style="text-align: right;">82.179</td>
+<td style="text-align: right;">82.50</td>
+<td style="text-align: right;">2.686</td>
+<td style="text-align: right;">-1.837</td>
+<td style="text-align: right;">12.006</td>
+<td style="text-align: right;">30.75</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Altitude [m]</td>
+<td style="text-align: right;">1784.551</td>
+<td style="text-align: right;">1310.64</td>
+<td style="text-align: right;">8771.059</td>
+<td style="text-align: right;">20.058</td>
+<td style="text-align: right;">415.104</td>
+<td style="text-align: right;">190163.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
+<p>Zauważmy kilka faktów:</p>
+<ul>
+<li><p>Dla zmiennych <strong>Flavor, Aroma, Acidity, Aftertaste</strong> różnice pomiędzy <em>medianą a średnią</em> wynoszą odpowiednio 0.056, 0.01, 0.039, 0.017 i we wszystkich przypadkach średnia arytmetyczna jest mniejsza od mediany. Świadczy to prawdopodobnie <strong>o symetrii rozkładu</strong> lub delikatnej lewostronnej skośności. Co więcej estymowana wartość skośności również sugeruje symetrię układu, ponieważ jest nieznacznie różna od zera. Dla zmiennej <strong>Total.Cup.Points</strong> różnica między medianą a średnią również jest mała, jednak wartość estymatora skośności mniejsza od -1 sugeruje <strong>lewostronną skośność rozkładu.</strong></p></li>
+<li><p>Dla parametrów <strong>Flavor, Aroma, Acidity, Aftertaste</strong> <em>odchylenie standardowe</em> wynosi w zaokrągleniu <strong>0.3</strong> i oznacza to, że większość obserwacji znajduje się w przedziale około <strong>7.2–7.8</strong>. To bardzo wąski przedział w kontekście pełnego zakresu 0–10. Podobnie dla rozstępu z próby różnica pomiędzy wartością najmniejszą a największą dla zadanych cech wynosi kolejno 2.75, 3.67, 3.5, 2.5.</p></li>
+<li><p><strong>Kurtoza</strong> dla wszystkich cech jest <strong>większa od 3</strong>. Miara jaką jest kurtoza wskazuje nam, że dla zadane cechy mają rozkłady leptokurtyczne, tzn. ogony rozkładów są grube i intensywność wartości skrajnych jest większa niż dla rozkładu normalnego.</p></li>
+</ul>
+<p><strong>4.1.2. zmienne kategoryczne</strong></p>
+<p>Na poniższych wykresach przedstawiono rozkład częstości występowania poszczególnych kategorii zmiennych kategorycznych w badanych danych.</p>
+<p><strong>a) Processing.Method</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Najczęściej stosowaną metodą przetwarzania ziaren kawy jest “washed/wet”, a zaraz za nią plasuje się metoda “natural/dry”. Wysoka popularność tych metod rodzi pytanie, czy są one związane z wyższą jakością kawy. Choć na podstawie samej częstości ich występowania nie możemy tego jednoznacznie stwierdzić, stanowi to punkt wyjścia do dalszej analizy. Hipoteza ta zostanie szczegółowo zbadana w kolejnych częściach raportu (<em>rozdział 4.3.</em>).</p>
+<p><strong>b) Country.of.Origin</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Powyższy wykres pokazuje dominację niektórych krajów w zestawieniu z innymi. Zauważmy, że najwięcej próbek pochodzi z Meksyku, Kolumbii i Gwatemali.</p>
+<p>Aby spojrzeć na dane w szerszym kontekście, możemy przeanalizować je na poziomie kontynentów. Po przyporządkowaniu krajów do odpowiednich kontynentów uzyskujemy następujący obraz.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Analizując wykres, zauważamy znaczącą przewagę próbek pochodzących z Ameryki. Oceania natomiast jest niemal nieobecna w zestawieniu – w danych znajduje się tylko jedna próbka z tego kontynentu.</p>
+</section>
+<section id="analiza---zmienne-ciągłe" class="level3">
+<h3 class="anchored" data-anchor-id="analiza---zmienne-ciągłe">4.2. Analiza - zmienne ciągłe</h3>
+<p><br> <strong>4.3.1. Wpływ zmiennych <code>Flavor</code>, <code>Aroma</code>, <code>Acidity</code>, <code>Aftertaste</code></strong></p>
+<p><strong>a) Rozkłady</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Na załączonych powyżej wykresach przedstawiony został rozkład dla zmiennych kategorycznych definiujących smak kawy (Flavor), zapach/aromat kawy (Aroma), kwasowość (Acidity) oraz posmak czyli wrażenia ogólne po spożyciu kawy (Aftertaste).</p>
+<p><strong>b) Korelacje pomiędzy zmiennymi</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (Aroma), kwasowością (Acidity), smakiem (Flavour), posmakiem (Aftertaste), wilgotnością ziaren (Moisture), wysokością upraw (altitude_mean_meters) oraz ogólną oceną kawy (Total.Cup.Points). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).</p>
+<p>Zauważalna jest bardzo słaba korelacja między zmiennymi Moisture i Altitude – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że <strong>przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw</strong>.</p>
+<p>Najsilniejsze korelacje z ogólną oceną kawy (Total.Cup.Points) występują dla parametrów Flavor i Aftertaste – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.</p>
+<p>Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="analiza---zmienne-kategoryczne" class="level3">
+<h3 class="anchored" data-anchor-id="analiza---zmienne-kategoryczne">4.3. Analiza - zmienne kategoryczne</h3>
+<p>W tej części skupimy się na analizie wpływu zmiennych <code>Processing.Method</code> oraz <code>Country.of.Origin</code> na oceny sensoryczne, a ostatecznie na ogólną ewaluację smaku kawy.</p>
+<p><strong>4.3.1. Wpływ zmiennej <code>Processing.Method</code></strong></p>
+<p>Przeanalizowano, jak różne metody przetwarzania ziaren kawy wpływają na dwie wybrane cechy sensoryczne - <code>Flavor</code> (<em>wykres a</em>) oraz <code>Aroma</code> (<em>wykres b</em>), a także na ogólną jakość kawy, wyrażoną przez <code>Total.Cup.Points</code> (<em>wykres c</em>).</p>
+<p><strong>a)</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Aby ułatwić interpretację wyników na wykresie, dodano poziomą przerywaną linię wskazującą medianę najwyższej oceny <code>Flavor</code>, którą osiąga metoda “Natural / Dry”. Warto jednak zauważyć, że różnice między medianami poszczególnych metod są niewielkie, co sugeruje brak wyraźnego lidera w tej kategorii. Wyjątkiem jest metoda “Other”, która wyróżnia się najniższą medianą, co wskazuje na ogólnie słabsze oceny smaku w tej grupie.</p>
+<p>Na uwagę zasługuje metoda “Pulped natural/honey”, której mediana jest bliska górnego kwartylu (Q3). To sugeruje, że w tej grupie dominują wysokie oceny <code>Flavor</code>. Niestety, metoda ta opiera się na bardzo małej liczbie próbek (<em>rozdział 4.1.2</em>), co ogranicza wiarygodność wyników i uniemożliwia jednoznaczną ocenę jej jakości.</p>
+<p>Z kolei metoda “Washed/Wet”, mimo największej liczby obserwacji, charakteryzuje się większym rozproszeniem wyników. Chociaż jej mediana jest porównywalna z “Natural/Dry”, szeroki rozkład wyników wskazuje na dużą zmienność ocen smaku. Z tego powodu nie można jednoznacznie uznać jej za najlepszą metodę.</p>
+<p><strong>b)</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Dla zmiennej <code>Aroma</code> zaobserwowano podobne wzorce jak w przypadku <code>Flavor</code>. Różnice między medianami ocen w poszczególnych metodach przetwarzania są niewielkie, a wartości IQR również są zbliżone. Można jednak zauważyć, że metoda “Natural/Dry” wydaje się nieco lepsza pod względem <code>Aroma</code>, ponieważ charakteryzuje się mniejszym rozproszeniem wyników w porównaniu do metody “Washed/Wet”, a jej wartości odstające znajdują się głównie w górnej części rozkładu. Warto jednak zwrócić uwagę na różnicę w liczebności próbek, gdzie dla metody “Natural / Dry” próba jest około trzykrotnie mniejsza. Z tego powodu trudno jednoznacznie stwierdzić, która metoda przetwarzania dominuje w tej kategorii, ponieważ zależy to od tego, czy priorytetem jest stabilność wyników, czy też potencjał uzyskania wyższych ocen.</p>
+<p><strong>c)</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Podobnie jak w przypadku zmiennych <code>Flavor</code> i <code>Aroma</code>, metody przetwarzania ziaren kawy mają zbliżony wpływ na zmienną <code>Total.Cup.Points</code>, co potwierdzają boxploty – mediana oraz IQR są podobne dla wszystkich metod. Takie wyniki były w pewnym stopniu oczekiwane, biorąc pod uwagę brak istotnych różnic w ocenach <code>Flavor</code> i <code>Aroma</code>, które składają się na ostateczną ocenę jakości kawy. W związku z tym, nie możemy jednoznacznie wskazać metody przetwarzania, która gwarantuje najwyższą jakość kawy, ponieważ wszystkie metody wydają się dawać podobne rezultaty w kontekście <code>Total.Cup.Points</code>.</p>
+<p><strong>4.3.2. Wpływ zmiennej <code>Country.of.Origin</code></strong></p>
+<p>Celem tej analizy jest określenie, który kraj produkuje najlepszą kawę. Ze względu na dużą liczbę krajów w naszym zbiorze danych, na początek wykluczymy te, które mają mniej niż 30 obserwacji, ponieważ ich obecność mogłaby prowadzić do mniej wiarygodnych wniosków. Dodatkowo, skoncentrujemy się na krajach, których mediana punktacji <code>Total.Cup.Points</code> wynosi co najmniej 82 punkty, ponieważ międzynarodowe standardy uznają kawy oceniane na minimum 80 punktów za produkty najwyższej jakości.</p>
+<p>Zanim jednak do tego przejdziemy spójrzy jak wygląda ogólna punktacja oceny jakości kawy dla każdego z kontynetów.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Na podstawie powyższego wykresu pudełkowego można zauważyć, że <strong>mediana oceny ogólnej kawy jest najwyższa w przypadku Afryki</strong>. Może to sugerować, że kraje afrykańskie produkują kawy o wyższej jakości. Dodatkowo, górny wąs wykresu dla Afryki przekracza wartość 90 i jest wyraźnie dłuższy niż dolny wąs. Świadczy to o dużym zróżnicowaniu w ocenach, z przewagą wyższych wartości, co oznacza, że kawa z Afryki częściej osiąga wyjątkowo wysokie oceny.</p>
+<p>Dla Ameryki i Azji mediana ocen jest na zbliżonym poziomie. W przypadku Ameryki wykres pokazuje dłuższe wąsy, co wskazuje na większe rozproszenie danych – kawa pochodząca z tego regionu może być zarówno bardzo dobrej jakości, jak i przeciętnej. Natomiast w Azji wąsy są krótsze niż w Ameryce, co sugeruje mniejszą zmienność w ocenach kawy. Azjatycka kawa charakteryzuje się nieco niższą medianą, ale bardziej jednorodnymi ocenami w porównaniu do kawy z Ameryki.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Dzięki przeprowadzonej selekcji wyróżniły się kraje, które mogą być uznane za czołowych producentów kawy. Etiopia zdecydowanie dominuje, osiągając najwyższą medianę punktacji <code>Total.Cup.Points</code>. Dodatkowo, w tej grupie brak jest wartości odstających, a zakres górnego wąsa boxplota (czyli najwyższy uzyskany wynik) jest większy niż w przypadku innych krajów. Na podstawie tych wyników można przypuszczać, że Etiopia produkuje kawę o najwyższej jakości.</p>
+<p>Podobnie, kraje takie jak Kolumbia i Kostaryka również wyróżniają się wysokimi wynikami. Choć Kolumbia ma wartości odstające poniżej dolnego rozkładu, jej rozstęp międzykwartylowy (IQR) jest stosunkowo mały, co sugeruje, że większość próbek charakteryzuje się podobnie wysoką jakością. Kostaryka, z medianą powyżej 82 punktów, również zalicza się do czołowych producentów kawy.</p>
+<p>Ciekawym przypadkiem jest Meksyk, który mimo największej liczby próbek (<em>rozdział 4.1.2, podpunkt b)</em>) nie znalazł się wśród krajów o najwyższej jakości kawie. Wynika to z niższych wyników <code>Total.Cup.Points</code>, co wyklucza go z rankingu najlepszych producentów.</p>
+<p>Co więcej, wyniki uzyskane w tej analizie są zgodne z międzynarodowymi rankingami producentów kawy. Przykładowo, wyszukując w internecie rankingi krajów słynących z najlepszej kawy, łatwo natrafimy na te same kraje, które znalazły się w naszej analizie: Brazylia, Kolumbia, Etiopia, Gwatemala oraz Kostaryka. Wszystkie te kraje pojawiają się na przedstawionym wykresie boxplot.</p>
+</section>
+</section>
+<section id="podsumowanie" class="level2">
+<h2 class="anchored" data-anchor-id="podsumowanie">5. Podsumowanie</h2>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

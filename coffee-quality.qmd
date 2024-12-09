@@ -1,90 +1,470 @@
 ---
-title: "coffee-quality"
+title: "Analiza jakości kawy"
+authors: "Zuzanna Sosnowska, Jagoda Płócienniczak" 
 ---
 
-## Wstęp
+## 1. Wstęp
 
-Celem naszego sprawozdania jest analiza jakości kawy na podstawie cech związanych z jej charakterem sensorycznym, miejscem uprawy oraz metodą przetwarzania. Kawy są oceniane według różnych parametrów, takich jak aromat, smak, posmak czy kwasowość, które składają się na ogólną ocenę jakości (`Total.Cup.Points`).
+Celem naszego sprawozdania jest analiza jakości kawy na podstawie cech związanych z jej charakterem sensorycznym, miejscem uprawy oraz metodą przetwarzania. Oceny kaw opierają się na różnych aspektach, takich jak aromat, smak, posmak czy kwasowość, które wspólnie tworzą końcową ocenę jakości wyrażoną w punktach (`Total.Cup.Points`).
 
-Analiza tych danych pozwoli nam lepiej zrozumieć, które z cech mają największy wpływ na końcową ocenę. Dodatkowo zbadamy, w jaki sposób takie czynniki jak wysokość upraw (`Altitude`), kraj pochodzenia (`Country.of.Origin`) czy metoda przetwarzania (`Processing.Method`) różnicują wyniki oceny sensorycznej.
+Analiza tych danych umożliwi lepsze zrozumienie, które cechy w największym stopniu wpływają na końcową ocenę jakości kawy. Ponadto przeanalizujemy, w jaki sposób takie czynniki jak wysokość upraw (`Altitude`), kraj pochodzenia (`Country.of.Origin`) oraz metoda przetwarzania (`Processing.Method`) wpływają na różnice w wynikach oceny sensorycznej.
 
-Nasze badanie opiera się na danych dotyczących jakości kawy zebranych przez Coffee Quality Institute (CQI). Dzięki tym analizom możliwe będzie zidentyfikowanie kluczowych aspektów, które wpływają na jakość kawy, co może być istotne zarówno dla producentów, jak i konsumentów.
+## 2. Pochodzenie danych
 
-## Pochodzenie danych
+Dane pochodzą z bazy Coffee Quality Database (styczeń 2018), prowadzonej przez Coffee Quality Institute (CQI), organizację non-profit zajmującą się oceną i poprawą jakości kawy na świecie. Oryginalne dane zostały pozyskane ze strony internetowej CQI ([database.coffeeinstitute.org](https://database.coffeeinstitute.org)) za pomocą narzędzi web scrapingowych, takich jak Selenium i Beautiful Soup. Zbiór danych, który analizujemy w dalszej części sprawozdania, pochodzi z platformy Kaggle i stanowi wersję przetworzoną – zawiera zarówno surowe dane (takie jak pobrano z CQI), jak i dane oczyszczone, w których ujednolicono formaty i jednostki miar dla wybranych zmiennych.
 
-Dane użyte w projekcie pochodzą z bazy Coffee Quality Database, prowadzonej przez Coffee Quality Institute (CQI), organizację non-profit zajmującą się oceną i poprawą jakości kawy na świecie. Oryginalne dane zostały pozyskane ze strony internetowej CQI ([database.coffeeinstitute.org](https://database.coffeeinstitute.org)) za pomocą narzędzi web scrapingowych, takich jak Selenium i Beautiful Soup. Zbiór danych udostępniony na platformie Kaggle jest zbiorem przetworzonym – zawiera zarówno surowe dane (takie jak pobrano z CQI), jak i dane oczyszczone, w których ujednolicono formaty i jednostki miar dla wybranych zmiennych.
+### 2.1. Licencja danych
 
-**Licencja danych**\
 Dane na Kaggle zostały udostępnione jako część projektu opublikowanego przez użytkownika GitHub z zastosowaniem licencji MIT. Licencja ta pozwala na swobodne wykorzystanie danych, również w celach edukacyjnych, o ile zachowana zostanie informacja o oryginalnym źródle. Warto jednak zaznaczyć, że pierwotne dane z CQI nie mają określonej licencji, co sugeruje konieczność ich wykorzystania z zachowaniem ostrożności, szczególnie w kontekstach komercyjnych.
 
-### **Opis zmiennych**
+## 3. Opis zmiennych
 
-1.  Dane, które analizujemy, obejmują różnorodne aspekty dotyczące jakości kawy, jej cech sensorycznych, metadanych o ziarnach oraz danych o farmach, z których kawa pochodzi. Poniżej przedstawiamy szczegółowy opis zmiennych dostępnych w zbiorze danych:
+Dane, które analizujemy, obejmują szeroki zakres informacji dotyczących jakości kawy, w tym jej cech sensorycznych, metadanych związanych z ziarnami oraz szczegółów dotyczących farm, z których pochodzi. Zebrane informacje zostały podzielone na kilka kategorii. Poniżej przedstawiamy szczegółowy opis dostępnych zmiennych:
 
-    #### **1. Miary jakości kawy (Quality Measures)**
+### 3.1. Miary jakości kawy (Quality Measures)
 
-    -   **Aroma (aromat)** – ocena zapachu kawy, w skali od 0 do 10 punktów. Wysoka ocena wskazuje na intensywny, przyjemny aromat.
+-   **Aroma (aromat)** – ocena zapachu kawy, w skali od 0 do 10 punktów. Wysoka ocena wskazuje na intensywny, przyjemny aromat.
 
-    -   **Flavor (smak)** – ocena smaku kawy, w skali od 0 do 10 punktów. Uwzględnia harmonię i intensywność smaków.
+-   **Flavor (smak)** – ocena smaku kawy, w skali od 0 do 10 punktów. Uwzględnia harmonię i intensywność smaków.
 
-    -   **Aftertaste (posmak)** – ocena wrażeń smakowych po spożyciu kawy, w skali od 0 do 10 punktów.
+-   **Aftertaste (posmak)** – ocena wrażeń smakowych po spożyciu kawy, w skali od 0 do 10 punktów.
 
-    -   **Acidity (kwasowość)** – ocena poziomu i charakteru kwasowości kawy, w skali od 0 do 10 punktów.
+-   **Acidity (kwasowość)** – ocena poziomu i charakteru kwasowości kawy, w skali od 0 do 10 punktów.
 
-    -   **Body (konsystencja)** – ocena wrażeń związanych z ciężkością i teksturą kawy, w skali od 0 do 10 punktów.
+-   **Body (konsystencja)** – ocena wrażeń związanych z ciężkością i teksturą kawy, w skali od 0 do 10 punktów.
 
-    -   **Balance (balans)** – ocena harmonii pomiędzy różnymi cechami sensorycznymi, w skali od 0 do 10 punktów.
+-   **Balance (balans)** – ocena harmonii pomiędzy różnymi cechami sensorycznymi, w skali od 0 do 10 punktów.
 
-    -   **Uniformity (jednorodność)** – wskaźnik spójności smaku pomiędzy filiżankami, w skali od 0 do 10 punktów.
+-   **Uniformity (jednorodność)** – wskaźnik spójności smaku pomiędzy filiżankami, w skali od 0 do 10 punktów.
 
-    -   **Cup Cleanliness (czystość smaku)** – ocena obecności negatywnych nut smakowych, w skali od 0 do 10 punktów.
+-   **Cup Cleanliness (czystość smaku)** – ocena obecności negatywnych nut smakowych, w skali od 0 do 10 punktów.
 
-    -   **Sweetness (słodycz)** – ocena słodkich nut w kawie, w skali od 0 do 10 punktów.
+-   **Sweetness (słodycz)** – ocena słodkich nut w kawie, w skali od 0 do 10 punktów.
 
-    -   **Moisture (wilgotność)** – zawartość wody w ziarnach kawy, wyrażona w procentach.
+-   **Moisture (wilgotność)** – zawartość wody w ziarnach kawy, wyrażona w procentach.
 
-    -   **Defects (wady)** – liczba defektów w próbce kawy, co może wpływać negatywnie na jej jakość.
+-   **Defects (wady)** – liczba defektów w próbce kawy, co może wpływać negatywnie na jej jakość.
 
-    #### **2. Metadane o ziarnach kawy (Bean Metadata)**
+### 3.2. Metadane o ziarnach kawy (Bean Metadata)
 
-    -   **Processing.Method (metoda przetwarzania)** – sposób przetwarzania ziaren kawy (np. „natural”, „washed”).
+-   **Processing.Method (metoda przetwarzania)** – sposób przetwarzania ziaren kawy (np. „natural”, „washed”).
 
-    -   **Color (kolor)** – kolor ziaren kawy (np. „green”, „yellow”).
+-   **Color (kolor)** – kolor ziaren kawy (np. „green”, „yellow”).
 
-    -   **Species (gatunek)** – gatunek kawy: arabica lub robusta.
+-   **Species (gatunek)** – gatunek kawy: arabica lub robusta.
 
-    #### **3. Metadane o farmach (Farm Metadata)**
+### 3.3. Metadane o farmach (Farm Metadata)
 
-    -   **Owner (właściciel)** – nazwa właściciela farmy.
+-   **Owner (właściciel)** – nazwa właściciela farmy.
 
-    -   **Country.of.Origin (kraj pochodzenia)** – kraj, z którego pochodzi kawa.
+-   **Country.of.Origin (kraj pochodzenia)** – kraj, z którego pochodzi kawa.
 
-    -   **Farm.Name (nazwa farmy)** – nazwa farmy, na której uprawiana była kawa.
+-   **Farm.Name (nazwa farmy)** – nazwa farmy, na której uprawiana była kawa.
 
-    -   **Lot.Number (numer partii)** – numer partii kawy.
+-   **Lot.Number (numer partii)** – numer partii kawy.
 
-    -   **Mill (młyn)** – nazwa młyna, w którym przetwarzano kawę.
+-   **Mill (młyn)** – nazwa młyna, w którym przetwarzano kawę.
 
-    -   **Company (firma)** – firma zajmująca się dystrybucją kawy.
+-   **Company (firma)** – firma zajmująca się dystrybucją kawy.
 
-    -   **Altitude (wysokość upraw)** – wysokość, na której uprawiana jest kawa, wyrażona w metrach nad poziomem morza.
+-   **Altitude (wysokość upraw)** – wysokość, na której uprawiana jest kawa, wyrażona w metrach nad poziomem morza.
 
-    -   **Region (region)** – region, w którym znajduje się farma.
+-   **Region (region)** – region, w którym znajduje się farma.
 
-W naszym sprawozdaniu skupimy się na analizie czynników wpływających na ocenę jakości kawy. W szczególności postaramy się odpowiedzieć na następujące pytania badawcze:
+Ze względu na obszerność dostępnych danych, do analizy wybrano kilka kluczowych parametrów, które mogą mieć istotny wpływ na jakość kawy (`Flavor`,`Aroma`, `Acidity`, `Aftertaste`, `Moisture`, `Processing.Method`, `Country.Of.Origin`, `altitude_mean_meters`). Skupienie się na tych aspektach pozwoli na bardziej precyzyjną analizę oraz wyciągnięcie trafnych i uzasadnionych wniosków.
 
--   **Cechy sensoryczne**: Jakie cechy sensoryczne (np. aromat, smak, posmak) mają największy wpływ na ogólną ocenę jakości kawy wyrażoną jako Total.Cup.Points?
+W ramach analizy postaramy się odpowiedzieć na następujące pytania badawcze:
 
--   **Wysokość upraw**: Czy wysokość, na której uprawiana jest kawa (Altitude), ma istotny wpływ na jej jakość ocenianą sensorycznie?
+-   Jakie cechy sensoryczne (np. aromat, smak) mają największy wpływ na ogólną ocenę jakości kawy?
 
--   **Różnice między krajami i metodami przetwarzania**: Jak oceny sensoryczne kaw różnią się w zależności od kraju pochodzenia (Country.of.Origin) i metody przetwarzania (Processing.Method)?
+-   Czy wysokość, na której uprawiana jest kawa, ma istotny wpływ na jej jakość ocenianą sensorycznie?
 
-```{r}
+-   Jak oceny sensoryczne kaw różnią się w zależności od metody przetwarzania?
+
+-   Który kraj może pochwalić się tytułem mistrza w produkcji kawy?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # Wczytane pakiety
 library(dplyr)
 library(ggplot2)
-
-# Wczytane dane
-data <- read.csv("arabica_data_cleaned.csv")
-data
+library(reshape2)
+library(tidyverse)
+library(patchwork)
+library(knitr)
+library(countrycode)
+library(GGally)
+library(psych)
+library(moments)
+library(statpsych)
 ```
+
+```{r, echo=FALSE}
+# Oryginalne dane
+data <- read.csv("arabica_data_cleaned.csv")
+data <- head(data, -1)
+data[data == ""] <- NA
+```
+
+```{r, echo=FALSE}
+#Przesiewanie danych
+data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Acidity", "Aftertaste","Moisture", "altitude_mean_meters", "Total.Cup.Points")] |>
+  mutate(Processing.Method = factor(Processing.Method),)
+```
+
+```{r, echo=FALSE, results='hide'}
+#Liczba braku danych
+sum(is.na(data_clean$Processing.Method))
+sum(is.na(data_clean$Country.of.Origin))
+sum(is.na(data_clean$altitude_mean_meters))
+sum(is.na(data_clean$Flavor))
+sum(is.na(data_clean$Aroma))
+sum(is.na(data_clean$Acidity))
+sum(is.na(data_clean$Aftertaste))
+sum(is.na(data_clean$Total.Cup.Points))
+```
+
+## 4. Analiza danych
+
+### 4.1. Statystyki opisowe
+
+Zanim przejdziemy do szczegółowej analizy danych, warto zacząć od przedstawienia podstawowych statystyk opisowych. Stanowią one fundament każdej analizy, umożliwiając lepsze zrozumienie ogólnych cech badanych zmiennych oraz ułatwiając interpretację wyników końcowych.
+
+**4.1.1. zmienne ciągłe**
+
+Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe, skośność, kurtozę oraz rozstęp z próby dla badanych parametrów.
+
+```{r, echo = FALSE, results='hide'}
+#Statystyki opisowe
+
+#Flavor
+mean_flavor <- mean(data_clean$Flavor, na.rm = TRUE)
+median_flavor <- median(data_clean$Flavor, na.rm = TRUE)
+sd_flavor <- sd(data_clean$Flavor, na.rm = TRUE)
+min_flavor <- min(data_clean$Flavor, na.rm = TRUE)  
+max_flavor <- max(data_clean$Flavor, na.rm = TRUE)
+skew_flavor <- skewness(data_clean$Flavor, na.rm = TRUE)
+kurt_flavor <- kurtosis(data_clean$Flavor, na.rm = TRUE)
+rozrzut_flavor <- max_flavor - min_flavor
+
+#Aroma
+mean_aroma <- mean(data_clean$Aroma, na.rm = TRUE)
+median_aroma <- median(data_clean$Aroma, na.rm = TRUE)
+sd_aroma <- sd(data_clean$Aroma, na.rm = TRUE)
+min_aroma <- min(data_clean$Aroma, na.rm = TRUE)  
+max_aroma <- max(data_clean$Aroma, na.rm = TRUE)
+skew_aroma <- skewness(data_clean$Aroma, na.rm = TRUE)
+kurt_aroma <- kurtosis(data_clean$Aroma, na.rm = TRUE)
+rozrzut_aroma <- max_aroma - min_aroma
+
+#Acidity
+mean_acidity <- mean(data_clean$Acidity, na.rm = TRUE)
+median_acidity <- median(data_clean$Acidity, na.rm = TRUE)
+sd_acidity <- sd(data_clean$Acidity, na.rm = TRUE)
+min_acidity <- min(data_clean$Acidity, na.rm = TRUE)  
+max_acidity <- max(data_clean$Acidity, na.rm = TRUE)
+skew_acidity <- skewness(data_clean$Acidity, na.rm = TRUE)
+kurt_acidity <- kurtosis(data_clean$Acidity, na.rm = TRUE)
+rozrzut_acidity <- max_acidity - min_acidity
+
+#Aftertaste
+mean_aftertaste <- mean(data_clean$Aftertaste, na.rm = TRUE)
+median_aftertaste <- median(data_clean$Aftertaste, na.rm = TRUE)
+sd_aftertaste <- sd(data_clean$Aftertaste, na.rm = TRUE)
+min_aftertaste <- min(data_clean$Aftertaste, na.rm = TRUE)  
+max_aftertaste <- max(data_clean$Aftertaste, na.rm = TRUE)
+skew_aftertaste <- skewness(data_clean$Aftertaste, na.rm = TRUE)
+kurt_aftertaste <- kurtosis(data_clean$Aftertaste, na.rm = TRUE)
+rozrzut_aftertaste <- max_aftertaste - min_aftertaste
+
+
+#Altitude
+mean_altitude <- mean(data_clean$altitude_mean_meters, na.rm = TRUE)
+median_altitude <- median(data_clean$altitude_mean_meters, na.rm = TRUE)
+sd_altitude <- sd(data_clean$altitude_mean_meters, na.rm = TRUE)
+min_altitude <- min(data_clean$altitude_mean_meters, na.rm = TRUE)  
+max_altitude <- max(data_clean$altitude_mean_meters, na.rm = TRUE)
+skew_altitude <- skewness(data_clean$altitude_mean_meters, na.rm = TRUE)
+kurt_altitude <- kurtosis(data_clean$altitude_mean_meters, na.rm = TRUE)
+rozrzut_altitude <- max_altitude - min_altitude
+
+#Total.Cup.Points
+mean_points <- mean(data_clean$Total.Cup.Points, na.rm = TRUE)
+median_points <- median(data_clean$Total.Cup.Points, na.rm = TRUE)
+sd_points <- sd(data_clean$Total.Cup.Points, na.rm = TRUE)
+min_points <- min(data_clean$Total.Cup.Points, na.rm = TRUE)  
+max_points <- max(data$Total.Cup.Points, na.rm = TRUE)
+skew_points <- skewness(data_clean$Total.Cup.Points, na.rm = TRUE)
+kurt_points <- kurtosis(data_clean$Total.Cup.Points, na.rm = TRUE)
+rozrzut_points <- max_points - min_points
+
+#Processing.Method
+count_method <- table(data_clean$Processing.Method)
+
+#Country.of.Origin
+count_country <- table(data_clean$Country.of.Origin)
+```
+
+```{r, echo = FALSE, message=FALSE}
+# Statystyki - zmienne ciągłe
+stats_description_a <- data.frame(
+  Zmienna = c("Flavor", "Aroma", "Acidity", "Aftertaste", "Total.Cup.Points", "Altitude [m]"),
+  Średnia = round(c(mean_flavor, mean_aroma, mean_acidity, mean_aftertaste, mean_points, mean_altitude), 3),
+  Mediana = round(c(median_flavor, median_aroma, median_acidity, median_aftertaste, median_points, median_altitude), 3),
+  Odchylenie.standardowe = round(c(sd_flavor, sd_aroma, sd_acidity, sd_aftertaste,  sd_points, sd_altitude), 3),
+  Skośność = round(c(skew_flavor, skew_aroma, skew_acidity, skew_aftertaste, skew_points, skew_altitude), 3),
+  Kurtoza = round(c(kurt_flavor, kurt_aroma, kurt_acidity, kurt_aftertaste, kurt_points, kurt_altitude), 3),
+  Rozrzut = round(c(rozrzut_flavor, rozrzut_aroma, rozrzut_acidity, rozrzut_aftertaste, rozrzut_points, rozrzut_altitude), 3)
+)
+
+kable(stats_description_a, format = "markdown", col.names = c("Zmienna", "Średnia", "Mediana", "Odch. Std.", "Skośność", "Kurtoza", "Rozstęp próby"))
+```
+
+<br>
+
+Zauważmy kilka faktów:
+
+-   Dla zmiennych **Flavor, Aroma, Acidity, Aftertaste** różnice pomiędzy *medianą a średnią* wynoszą odpowiednio 0.056, 0.01, 0.039, 0.017 i we wszystkich przypadkach średnia arytmetyczna jest mniejsza od mediany. Świadczy to prawdopodobnie **o symetrii rozkładu** lub delikatnej lewostronnej skośności. Co więcej estymowana wartość skośności również sugeruje symetrię układu, ponieważ jest nieznacznie różna od zera. Dla zmiennej **Total.Cup.Points** różnica między medianą a średnią również jest mała, jednak wartość estymatora skośności mniejsza od -1 sugeruje **lewostronną skośność rozkładu.**
+
+-   Dla parametrów **Flavor, Aroma, Acidity, Aftertaste** *odchylenie standardowe* wynosi w zaokrągleniu **0.3** i oznacza to, że większość obserwacji znajduje się w przedziale około **7.2–7.8**. To bardzo wąski przedział w kontekście pełnego zakresu 0–10. Podobnie dla rozstępu z próby różnica pomiędzy wartością najmniejszą a największą dla zadanych cech wynosi kolejno 2.75, 3.67, 3.5, 2.5.
+
+-   **Kurtoza** dla wszystkich cech jest **większa od 3**. Miara jaką jest kurtoza wskazuje nam, że dla zadane cechy mają rozkłady leptokurtyczne, tzn. ogony rozkładów są grube i intensywność wartości skrajnych jest większa niż dla rozkładu normalnego.
+
+**4.1.2. zmienne kategoryczne**
+
+Na poniższych wykresach przedstawiono rozkład częstości występowania poszczególnych kategorii zmiennych kategorycznych w badanych danych.
+
+**a) Processing.Method**
+
+```{r, echo = FALSE}
+ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = fct_infreq(Processing.Method))) +
+  geom_bar(fill = "lightblue") +
+  labs(title = "Częstość występowania metod przetwarzania ziaren kawy", x = "Metoda przetwarzania", y = "Liczba wystąpień") +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm"), axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
+```
+
+Najczęściej stosowaną metodą przetwarzania ziaren kawy jest "washed/wet", a zaraz za nią plasuje się metoda "natural/dry". Wysoka popularność tych metod rodzi pytanie, czy są one związane z wyższą jakością kawy. Choć na podstawie samej częstości ich występowania nie możemy tego jednoznacznie stwierdzić, stanowi to punkt wyjścia do dalszej analizy. Hipoteza ta zostanie szczegółowo zbadana w kolejnych częściach raportu (*rozdział 4.3.*).
+
+**b) Country.of.Origin**
+
+```{r, echo = FALSE}
+ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Country.of.Origin))) +
+  geom_bar(fill = "lightblue") +
+  labs(title = "Częstość występowania krajów pochodzenia ziaren kawy", x = "Kraj pochodzenia", y = "Liczba wystąpień") +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm"), axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
+```
+
+Powyższy wykres pokazuje dominację niektórych krajów w zestawieniu z innymi. Zauważmy, że najwięcej próbek pochodzi z Meksyku, Kolumbii i Gwatemali.
+
+
+```{r, echo=FALSE}
+data_clean$Country.of.Origin <- ifelse(
+  data_clean$Country.of.Origin == "United States (Puerto Rico)",
+  "Puerto Rico",
+  data_clean$Country.of.Origin
+)
+
+# Dodanie niestandardowego przypisania dla Puerto Rico
+custom_matches <- c("Puerto Rico" = "Americas")
+
+data_clean$Continent <- countrycode(
+  sourcevar = data_clean$Country.of.Origin,
+  origin = "country.name",
+  destination = "continent",
+  custom_match = custom_matches
+)
+```
+
+
+Aby spojrzeć na dane w szerszym kontekście, możemy przeanalizować je na poziomie kontynentów. Po przyporządkowaniu krajów do odpowiednich kontynentów uzyskujemy następujący obraz.
+
+```{r, echo = FALSE}
+ggplot(data=subset(data_clean, !is.na(Continent)), aes(x = fct_infreq(Continent))) +
+  geom_bar(fill = "lightblue") +
+  labs(title = "Częstość występowania kontynentów pochodzenia ziaren kawy", x = "Kontynent", y = "Liczba wystąpień") +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm"), axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
+```
+Analizując wykres, zauważamy znaczącą przewagę próbek pochodzących z Ameryki. Oceania natomiast jest niemal nieobecna w zestawieniu – w danych znajduje się tylko jedna próbka z tego kontynentu.
+
+### 4.2. Analiza - zmienne ciągłe
+<br>
+**4.3.1. Wpływ zmiennych `Flavor`, `Aroma`, `Acidity`, `Aftertaste`**
+
+**a) Rozkłady** 
+
+```{r, echo=FALSE}
+plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
+  # geom_bar(fill = "lightblue") +
+  geom_density(fill = "lightblue") + 
+  labs(title = "Rozkład Flavour", x = "Flavor", y = "Liczba obserwacji") +
+    xlim(5, 10) +
+  theme_minimal(base_size = 8)
+
+plot_aroma <- ggplot(data_clean, aes(x = Aroma)) +
+  # geom_bar(fill = "lightgreen") +
+  geom_density(fill = "lightgreen") + 
+  labs(title = "Rozkład Aroma", x = "Aroma", y = "Liczba obserwacji") +
+  xlim(5, 10) +
+  theme_minimal(base_size = 8)
+
+plot_acidity <- ggplot(data_clean, aes(x = Acidity)) +
+  # geom_bar(fill = "lightpink") +
+  geom_density(fill = "lightpink") + 
+  labs(title = "Rozkład Acidity", x = "Acidity", y = "Liczba obserwacji") +
+  xlim(5, 10) +
+  theme_minimal(base_size = 8)
+
+plot_aftertaste <- ggplot(data_clean, aes(x = Aftertaste)) +
+  # geom_bar(fill = "lightgoldenrod") +
+    geom_density(fill = "lightgoldenrod") + 
+  labs(title = "Rozkład Aftertaste", x = "Aftertaste", y = "Liczba obserwacji") +
+  xlim(5, 10) +
+  theme_minimal(base_size = 8)
+
+(plot_flavour + plot_aroma) / (plot_acidity + plot_aftertaste)
+```
+
+Na załączonych powyżej wykresach przedstawiony został rozkład dla zmiennych kategorycznych definiujących smak kawy (Flavor), zapach/aromat kawy (Aroma), kwasowość (Acidity) oraz posmak czyli wrażenia ogólne po spożyciu kawy (Aftertaste).
+
+
+**b) Korelacje pomiędzy zmiennymi**
+```{r, echo = FALSE}
+cor_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Moisture", "altitude_mean_meters", "Total.Cup.Points")]
+
+cor_matrix <- cor(cor_data, use = "complete.obs", method = "spearman")
+
+cor_melt <- melt(cor_matrix)
+# Tworzenie heatmapy z ggplot2
+ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = round(value, 2)), color = "black", size = 4) +
+  scale_fill_gradientn(colors = c("lightblue","lightyellow", "red"), 
+                      values = scales::rescale(c(-0.21, 0.75, 1)), 
+                       limits = c(-0.21, 1), 
+                       name = "Korelacja") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  labs(title = "Heatmapa korelacji", x = "", y = "")
+```
+
+Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (Aroma), kwasowością (Acidity), smakiem (Flavour), posmakiem (Aftertaste), wilgotnością ziaren (Moisture), wysokością upraw (altitude_mean_meters) oraz ogólną oceną kawy (Total.Cup.Points). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).
+
+Zauważalna jest bardzo słaba korelacja między zmiennymi Moisture i Altitude – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że **przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw**.
+
+Najsilniejsze korelacje z ogólną oceną kawy (Total.Cup.Points) występują dla parametrów Flavor i Aftertaste – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.
+
+Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.
+
+```{r, echo=FALSE}
+scatterplot_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Total.Cup.Points")]
+ggpairs(scatterplot_data, axisLabels = "show")
+```
+
+### 4.3. Analiza - zmienne kategoryczne
+
+W tej części skupimy się na analizie wpływu zmiennych `Processing.Method` oraz `Country.of.Origin` na oceny sensoryczne, a ostatecznie na ogólną ewaluację smaku kawy.
+
+**4.3.1. Wpływ zmiennej `Processing.Method`**
+
+Przeanalizowano, jak różne metody przetwarzania ziaren kawy wpływają na dwie wybrane cechy sensoryczne - `Flavor` (*wykres a*) oraz `Aroma` (*wykres b*), a także na ogólną jakość kawy, wyrażoną przez `Total.Cup.Points` (*wykres c*). 
+
+**a)**
+
+```{r, echo = FALSE}
+ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Method, y = Flavor, fill=Processing.Method)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Metoda przetwarzania", title = "Flavor w zależności od metody przetwarzania") +
+  geom_boxplot()+
+  geom_hline(yintercept = 7.58, linetype = "dashed", color = "black")
+```
+Aby ułatwić interpretację wyników na wykresie, dodano poziomą przerywaną linię wskazującą medianę najwyższej oceny `Flavor`, którą osiąga metoda "Natural / Dry". Warto jednak zauważyć, że różnice między medianami poszczególnych metod są niewielkie, co sugeruje brak wyraźnego lidera w tej kategorii. Wyjątkiem jest metoda "Other", która wyróżnia się najniższą medianą, co wskazuje na ogólnie słabsze oceny smaku w tej grupie.
+
+Na uwagę zasługuje metoda "Pulped natural/honey", której mediana jest bliska górnego kwartylu (Q3). To sugeruje, że w tej grupie dominują wysokie oceny `Flavor`. Niestety, metoda ta opiera się na bardzo małej liczbie próbek (*rozdział 4.1.2*), co ogranicza wiarygodność wyników i uniemożliwia jednoznaczną ocenę jej jakości.
+
+Z kolei metoda "Washed/Wet", mimo największej liczby obserwacji, charakteryzuje się większym rozproszeniem wyników. Chociaż jej mediana jest porównywalna z "Natural/Dry", szeroki rozkład wyników wskazuje na dużą zmienność ocen smaku. Z tego powodu nie można jednoznacznie uznać jej za najlepszą metodę.
+
+
+**b)**
+
+```{r, echo = FALSE}
+ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Method, y = Aroma, fill=Processing.Method)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Metoda przetwarzania", title = "Aroma w zależności od metody przetwarzania") +
+  geom_boxplot() +
+  geom_hline(yintercept = 7.59, linetype = "dashed", color = "black")
+
+```
+Dla zmiennej `Aroma` zaobserwowano podobne wzorce jak w przypadku `Flavor`. Różnice między medianami ocen w poszczególnych metodach przetwarzania są niewielkie, a wartości IQR również są zbliżone. Można jednak zauważyć, że metoda "Natural/Dry" wydaje się nieco lepsza pod względem `Aroma`, ponieważ charakteryzuje się mniejszym rozproszeniem wyników w porównaniu do metody "Washed/Wet", a jej wartości odstające znajdują się głównie w górnej części rozkładu. Warto jednak zwrócić uwagę na różnicę w liczebności próbek, gdzie dla metody "Natural / Dry" próba jest około trzykrotnie mniejsza. Z tego powodu trudno jednoznacznie stwierdzić, która metoda przetwarzania dominuje w tej kategorii, ponieważ zależy to od tego, czy priorytetem jest stabilność wyników, czy też potencjał uzyskania wyższych ocen.
+
+
+**c)**
+
+```{r, echo = FALSE}
+ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Method, y = Total.Cup.Points, fill=Processing.Method)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5)) +
+  labs(title="Total.Cup.Points w zależności od metody przetwarzania", x = "Metoda przetwarzania") +
+  geom_boxplot()
+```
+
+Podobnie jak w przypadku zmiennych `Flavor` i `Aroma`, metody przetwarzania ziaren kawy mają zbliżony wpływ na zmienną `Total.Cup.Points`, co potwierdzają boxploty – mediana oraz IQR są podobne dla wszystkich metod. Takie wyniki były w pewnym stopniu oczekiwane, biorąc pod uwagę brak istotnych różnic w ocenach `Flavor` i `Aroma`, które składają się na ostateczną ocenę jakości kawy. W związku z tym, nie możemy jednoznacznie wskazać metody przetwarzania, która gwarantuje najwyższą jakość kawy, ponieważ wszystkie metody wydają się dawać podobne rezultaty w kontekście `Total.Cup.Points`.
+
+
+**4.3.2. Wpływ zmiennej `Country.of.Origin`**
+
+Celem tej analizy jest określenie, który kraj produkuje najlepszą kawę. Ze względu na dużą liczbę krajów w naszym zbiorze danych, na początek wykluczymy te, które mają mniej niż 30 obserwacji, ponieważ ich obecność mogłaby prowadzić do mniej wiarygodnych wniosków. Dodatkowo, skoncentrujemy się na krajach, których mediana punktacji `Total.Cup.Points` wynosi co najmniej 82 punkty, ponieważ międzynarodowe standardy uznają kawy oceniane na minimum 80 punktów za produkty najwyższej jakości.
+
+Zanim jednak do tego przejdziemy spójrzy jak wygląda ogólna punktacja oceny jakości kawy dla każdego z kontynetów.
+
+```{r, echo=FALSE}
+# Analiza kontynentów
+continent_data <- data_clean %>%
+  filter(!is.na(Continent) & !is.na(Total.Cup.Points)) %>%
+  group_by(Continent) %>%
+  summarise(
+    mediana = median(Total.Cup.Points, na.rm = TRUE),
+    Liczba_Obserwacji = n()
+  ) %>%
+  filter(Liczba_Obserwacji >= 30) %>%
+  inner_join(data_clean, by = "Continent")
+
+
+ggplot(continent_data, aes(x = Continent, y = Total.Cup.Points, fill = Continent)) +
+  geom_boxplot(width=0.35,  staplewidth=0.25,coef=3) +
+  labs(title = "Boxplot ocen ogólnych według kontynentów", x = "Kontynent", y = "Ocena ogólna", caption="Wartości nietypowe zdefiniowano siatką Tukeya ze stałą 3") +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm"), plot.title = element_text(hjust = 0.5))
+```
+
+Na podstawie powyższego wykresu pudełkowego można zauważyć, że **mediana oceny ogólnej kawy jest najwyższa w przypadku Afryki**. Może to sugerować, że kraje afrykańskie produkują kawy o wyższej jakości. Dodatkowo, górny wąs wykresu dla Afryki przekracza wartość 90 i jest wyraźnie dłuższy niż dolny wąs. Świadczy to o dużym zróżnicowaniu w ocenach, z przewagą wyższych wartości, co oznacza, że kawa z Afryki częściej osiąga wyjątkowo wysokie oceny.
+
+Dla Ameryki i Azji mediana ocen jest na zbliżonym poziomie. W przypadku Ameryki wykres pokazuje dłuższe wąsy, co wskazuje na większe rozproszenie danych – kawa pochodząca z tego regionu może być zarówno bardzo dobrej jakości, jak i przeciętnej. Natomiast w Azji wąsy są krótsze niż w Ameryce, co sugeruje mniejszą zmienność w ocenach kawy. Azjatycka kawa charakteryzuje się nieco niższą medianą, ale bardziej jednorodnymi ocenami w porównaniu do kawy z Ameryki.
+
+
+```{r, echo=FALSE}
+filtered_data <- data_clean %>%
+  filter(!is.na(Country.of.Origin) & !is.na(Total.Cup.Points)) %>%
+  group_by(Country.of.Origin) %>%
+  summarise(mediana = median(Total.Cup.Points, na.rm = TRUE),
+            Liczba_Obserwacji = n()) %>%
+  filter(mediana >= 82 & Liczba_Obserwacji >= 30) %>%
+  inner_join(data_clean, by = "Country.of.Origin")
+
+ggplot(data = filtered_data, aes(x = Country.of.Origin, y = Total.Cup.Points, fill=Country.of.Origin)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Kraj pochodzenia", y = "Total Cup Points", title="Boxplot ocen ogólnych według krajów")+
+  geom_hline(yintercept = 82.5, linetype = "dashed", color = "black")
+
+```
+Dzięki przeprowadzonej selekcji wyróżniły się kraje, które mogą być uznane za czołowych producentów kawy. Etiopia zdecydowanie dominuje, osiągając najwyższą medianę punktacji `Total.Cup.Points`. Dodatkowo, w tej grupie brak jest wartości odstających, a zakres górnego wąsa boxplota (czyli najwyższy uzyskany wynik) jest większy niż w przypadku innych krajów. Na podstawie tych wyników można przypuszczać, że Etiopia produkuje kawę o najwyższej jakości.
+
+Podobnie, kraje takie jak Kolumbia i Kostaryka również wyróżniają się wysokimi wynikami. Choć Kolumbia ma wartości odstające poniżej dolnego rozkładu, jej rozstęp międzykwartylowy (IQR) jest stosunkowo mały, co sugeruje, że większość próbek charakteryzuje się podobnie wysoką jakością. Kostaryka, z medianą powyżej 82 punktów, również zalicza się do czołowych producentów kawy.
+
+Ciekawym przypadkiem jest Meksyk, który mimo największej liczby próbek (*rozdział 4.1.2, podpunkt b)*) nie znalazł się wśród krajów o najwyższej jakości kawie. Wynika to z niższych wyników `Total.Cup.Points`, co wyklucza go z rankingu najlepszych producentów.
+
+Co więcej, wyniki uzyskane w tej analizie są zgodne z międzynarodowymi rankingami producentów kawy. Przykładowo, wyszukując w internecie rankingi krajów słynących z najlepszej kawy, łatwo natrafimy na te same kraje, które znalazły się w naszej analizie: Brazylia, Kolumbia, Etiopia, Gwatemala oraz Kostaryka. Wszystkie te kraje pojawiają się na przedstawionym wykresie boxplot.
+
+
+## 5. Podsumowanie
