@@ -98,14 +98,22 @@ library(statpsych)
 ```{r, echo=FALSE}
 # Oryginalne dane
 data <- read.csv("arabica_data_cleaned.csv")
+# Nie bierzemy pod uwagę danych z ostatniego wiersza, ze względu na to, że zawiera błędy - ogólna ocena kawy nie może wynosić zero.
 data <- head(data, -1)
+# Do pustych rubryk przypisujemy NA
 data[data == ""] <- NA
 ```
 
 ```{r, echo=FALSE}
-#Przesiewanie danych
+#Przesiewanie danych 
 data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Acidity", "Aftertaste","Moisture", "altitude_mean_meters", "Total.Cup.Points")] |>
   mutate(Processing.Method = factor(Processing.Method),)
+
+# Jeśli wysokość nad poziomem morza przekracza 8000 metrów to uprawa kawy jest niemożlwa i w danych jest błąd.
+data_clean$altitude_mean_meters[data_clean$altitude_mean_meters > 8000] <- NA
+data_clean$Country.of.Origin[data_clean$Country.of.Origin == "Tanzania, United Republic Of"] <- "Tanzania"
+data_clean$Country.of.Origin[data_clean$Country.of.Origin == "Cote d?Ivoire"] <- "Cote d'ivoire"
+view(data_clean)
 ```
 
 ```{r, echo=FALSE, results='hide'}
@@ -224,13 +232,13 @@ Zauważmy kilka faktów:
 
     Dla zmiennej **Total.Cup.Points** różnica między medianą a średnią również jest niewielka, ale wartość estymatora skośności poniżej -1 wskazuje na bardziej wyraźną lewostronną skośność. Oznacza to, że w tym przypadku rozkład jest lekko przesunięty, z dłuższym ogonem po stronie niższych wartości.
 
-    W przypadku zmiennej **Altitude** (wysokość uprawy) sytuacja jest odmienna: mediana jest znacznie mniejsza od średniej, co wskazuje na silną prawostronną skośność. Skośność przekraczająca wartość 20 wyraźnie potwierdza, że rozkład tej cechy jest zdecydowanie asymetryczny, z długim ogonem po stronie wyższych wartości.
+    W przypadku zmiennej **Altitude** (wysokość uprawy) sytuacja jest odmienna: mediana jest mniejsza od średniej, co wskazuje na słabą prawostronną skośność. Potwierdza to wartość współczynnika skośności - wynosi ona ponad 0.5 co potwierdza nasze przypuszczenia.
 
 -   Dla zmiennych **Flavor**, **Aroma**, **Acidity** i **Aftertaste** odchylenie standardowe wynosi około **0.3**, co oznacza, że większość obserwacji jest skoncentrowana w wąskim zakresie wartości od około **7.2 do 7.8**. W porównaniu z pełnym zakresem możliwych wartości (0–10) wskazuje to na bardzo małą zmienność tych cech. Również analiza rozstępu próby (różnicy między wartością minimalną a maksymalną) dla tych parametrów pokazuje stosunkowo niewielkie rozproszenie: wynosi ono odpowiednio **2.75**, **3.67**, **3.5** i **2.5**.
 
     Dla zmiennej **Total.Cup.Points** (ogólnej oceny kawy) odchylenie standardowe wynosi **2.686**, co w odniesieniu do pełnego zakresu **0–100** jest stosunkowo niską wartością. Wskazuje to, że ogólna ocena kawy również charakteryzuje się umiarkowaną zmiennością.
 
-    Natomiast dla cechy **Altitude** (wysokości uprawy) zarówno odchylenie standardowe, jak i rozstęp z próby przyjmują znacznie większe wartości w relacji do średniej wynoszącej **1784.551**. Świadczy to o dużym rozproszeniu danych w tym przypadku, co oznacza, że wysokości upraw kawy są znacznie bardziej zróżnicowane niż pozostałe analizowane cechy.
+    Natomiast dla cechy **Altitude** (wysokości uprawy) zarówno odchylenie standardowe, jak i rozstęp z próby przyjmują znacznie większe wartości w relacji do średniej wynoszącej . Świadczy to o dużym rozproszeniu danych w tym przypadku 4286.00, co oznacza, że wysokości upraw kawy są znacznie bardziej zróżnicowane niż pozostałe analizowane cechy.
 
 -   Kurtoza dla wszystkich analizowanych cech jest większa niż 3, co oznacza, że rozkłady tych zmiennych są **leptokurtyczne**. Takie rozkłady charakteryzują się "grubszymi" ogonami, co wskazuje na wyższą intensywność wartości skrajnych w porównaniu do rozkładu normalnego. W praktyce oznacza to, że w danych występuje większa liczba ekstremalnych obserwacji niż w przypadku klasycznego rozkładu normalnego.
 
@@ -335,7 +343,22 @@ aroma_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aroma)) +
 (aftertaste_cor | flavor_cor) / (acidity_cor | aroma_cor) + plot_annotation(
   title = "Zależność między ogólną oceną kawy a poszczególnymi cechami")
 ```
-Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować zależność ta jest monotoniczna, dlatego estymowana wartość korelacji dla estymatora korelacji Spearmanna powinna przyjmować wartości dodatnie.
+
+Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować punkty układają się wzdłuż krzywej regresji, dlatego możemy się spodziewać, że korelacja jest niezerowa.
+
+```{r, echo=FALSE}
+moisture_cor <- ggplot(data_clean[!is.na(data_clean$Moisture), ], aes(x=Total.Cup.Points, y=Moisture)) + 
+    geom_point(col = "#00FF00") + 
+    labs(x = "Ocena kawy", y = "Wilgotność ziaren kawy")
+  
+altitude_cor <- ggplot(data_clean[!is.na(data_clean$altitude_mean_meters), ], aes(x=Total.Cup.Points, y=altitude_mean_meters)) + 
+    geom_point(col = "#FC4E07") + 
+  coord_cartesian(ylim = c(0, 3000))
+  labs(x = "Ocena kawy", y = "Wysokość uprawy")
+
+moisture_cor + altitude_cor
+
+```
 
 ```{r, echo=FALSE}
 plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
