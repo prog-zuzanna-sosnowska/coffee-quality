@@ -105,7 +105,7 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li><p><strong>Processing.Method (metoda przetwarzania)</strong> – sposób przetwarzania ziaren kawy (np. „natural”, „washed”).</p></li>
 <li><p><strong>Color (kolor)</strong> – kolor ziaren kawy (np. „green”, „yellow”).</p></li>
-<li><p><strong>Species (gatunek)</strong> – gatunek kawy: arabica lub robusta.</p></li>
+<li><p><strong>Species (gatunek)</strong> – gatunek kawy: arabica.</p></li>
 </ul>
 </section>
 <section id="metadane-o-farmach-farm-metadata" class="level3">
@@ -135,7 +135,8 @@ ul.task-list li input[type="checkbox"] {
 <section id="statystyki-opisowe" class="level3">
 <h3 class="anchored" data-anchor-id="statystyki-opisowe">4.1. Statystyki opisowe</h3>
 <p>Zanim przejdziemy do szczegółowej analizy danych, warto zacząć od przedstawienia podstawowych statystyk opisowych. Stanowią one fundament każdej analizy, umożliwiając lepsze zrozumienie ogólnych cech badanych zmiennych oraz ułatwiając interpretację wyników końcowych.</p>
-<p><strong>4.1.1. zmienne ciągłe</strong></p>
+<section id="zmienne-ciągłe" class="level4">
+<h4 class="anchored" data-anchor-id="zmienne-ciągłe">4.1.1. Zmienne ciągłe</h4>
 <p>Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe, skośność, kurtozę oraz rozstęp z próby dla badanych parametrów.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -208,12 +209,12 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="even">
 <td style="text-align: left;">Altitude [m]</td>
-<td style="text-align: right;">1784.551</td>
+<td style="text-align: right;">1326.544</td>
 <td style="text-align: right;">1310.64</td>
-<td style="text-align: right;">8771.059</td>
-<td style="text-align: right;">20.058</td>
-<td style="text-align: right;">415.104</td>
-<td style="text-align: right;">190163.00</td>
+<td style="text-align: right;">476.130</td>
+<td style="text-align: right;">0.546</td>
+<td style="text-align: right;">8.943</td>
+<td style="text-align: right;">4286.00</td>
 </tr>
 </tbody>
 </table>
@@ -222,11 +223,17 @@ ul.task-list li input[type="checkbox"] {
 <p><br></p>
 <p>Zauważmy kilka faktów:</p>
 <ul>
-<li><p>Dla zmiennych <strong>Flavor, Aroma, Acidity, Aftertaste</strong> różnice pomiędzy <em>medianą a średnią</em> wynoszą odpowiednio 0.056, 0.01, 0.039, 0.017 i we wszystkich przypadkach średnia arytmetyczna jest mniejsza od mediany. Świadczy to prawdopodobnie <strong>o symetrii rozkładu</strong> lub delikatnej lewostronnej skośności. Co więcej estymowana wartość skośności również sugeruje symetrię układu, ponieważ jest nieznacznie różna od zera. Dla zmiennej <strong>Total.Cup.Points</strong> różnica między medianą a średnią również jest mała, jednak wartość estymatora skośności mniejsza od -1 sugeruje <strong>lewostronną skośność rozkładu.</strong></p></li>
-<li><p>Dla parametrów <strong>Flavor, Aroma, Acidity, Aftertaste</strong> <em>odchylenie standardowe</em> wynosi w zaokrągleniu <strong>0.3</strong> i oznacza to, że większość obserwacji znajduje się w przedziale około <strong>7.2–7.8</strong>. To bardzo wąski przedział w kontekście pełnego zakresu 0–10. Podobnie dla rozstępu z próby różnica pomiędzy wartością najmniejszą a największą dla zadanych cech wynosi kolejno 2.75, 3.67, 3.5, 2.5.</p></li>
-<li><p><strong>Kurtoza</strong> dla wszystkich cech jest <strong>większa od 3</strong>. Miara jaką jest kurtoza wskazuje nam, że dla zadane cechy mają rozkłady leptokurtyczne, tzn. ogony rozkładów są grube i intensywność wartości skrajnych jest większa niż dla rozkładu normalnego.</p></li>
+<li><p>Dla zmiennych <strong>Flavor</strong>, <strong>Aroma</strong>, <strong>Acidity</strong> i <strong>Aftertaste</strong> różnice między medianą a średnią są niewielkie (odpowiednio: 0.056, 0.01, 0.039, 0.017), a w każdym przypadku średnia jest nieco niższa od mediany. Taki układ wskazuje na niemal symetryczny rozkład lub delikatną skośność lewostronną. Dodatkowo, wartość estymowanej skośności jest bliska zeru, co również potwierdza, że rozkłady te są zbliżone do symetrycznych i ewentualne odchylenia są minimalne.</p>
+<p>Dla zmiennej <strong>Total.Cup.Points</strong> różnica między medianą a średnią również jest niewielka, ale wartość estymatora skośności poniżej -1 wskazuje na bardziej wyraźną lewostronną skośność. Oznacza to, że w tym przypadku rozkład jest lekko przesunięty, z dłuższym ogonem po stronie niższych wartości.</p>
+<p>W przypadku zmiennej <strong>Altitude</strong> (wysokość uprawy) sytuacja jest odmienna: mediana jest mniejsza od średniej, co wskazuje na słabą prawostronną skośność. Potwierdza to wartość współczynnika skośności - wynosi ona ponad 0.5 co potwierdza nasze przypuszczenia.</p></li>
+<li><p>Dla zmiennych <strong>Flavor</strong>, <strong>Aroma</strong>, <strong>Acidity</strong> i <strong>Aftertaste</strong> odchylenie standardowe wynosi około <strong>0.3</strong>, co oznacza, że większość obserwacji jest skoncentrowana w wąskim zakresie wartości od około <strong>7.2 do 7.8</strong>. W porównaniu z pełnym zakresem możliwych wartości (0–10) wskazuje to na bardzo małą zmienność tych cech. Również analiza rozstępu próby (różnicy między wartością minimalną a maksymalną) dla tych parametrów pokazuje stosunkowo niewielkie rozproszenie: wynosi ono odpowiednio <strong>2.75</strong>, <strong>3.67</strong>, <strong>3.5</strong> i <strong>2.5</strong>.</p>
+<p>Dla zmiennej <strong>Total.Cup.Points</strong> (ogólnej oceny kawy) odchylenie standardowe wynosi <strong>2.686</strong>, co w odniesieniu do pełnego zakresu <strong>0–100</strong> jest stosunkowo niską wartością. Wskazuje to, że ogólna ocena kawy również charakteryzuje się umiarkowaną zmiennością.</p>
+<p>Natomiast dla cechy <strong>Altitude</strong> (wysokości uprawy) zarówno odchylenie standardowe, jak i rozstęp z próby przyjmują znacznie większe wartości w relacji do średniej wynoszącej. Świadczy to o dużym rozproszeniu danych w tym przypadku 4286.00, co oznacza, że wysokości upraw kawy są znacznie bardziej zróżnicowane niż pozostałe analizowane cechy.</p></li>
+<li><p>Kurtoza dla wszystkich analizowanych cech jest większa niż 3, co oznacza, że rozkłady tych zmiennych są <strong>leptokurtyczne</strong>. Takie rozkłady charakteryzują się “grubszymi” ogonami, co wskazuje na wyższą intensywność wartości skrajnych w porównaniu do rozkładu normalnego. W praktyce oznacza to, że w danych występuje większa liczba ekstremalnych obserwacji niż w przypadku klasycznego rozkładu normalnego.</p></li>
 </ul>
-<p><strong>4.1.2. zmienne kategoryczne</strong></p>
+</section>
+<section id="zmienne-kategoryczne" class="level4">
+<h4 class="anchored" data-anchor-id="zmienne-kategoryczne">4.1.2. Zmienne kategoryczne</h4>
 <p>Na poniższych wykresach przedstawiono rozkład częstości występowania poszczególnych kategorii zmiennych kategorycznych w badanych danych.</p>
 <p><strong>a) Processing.Method</strong></p>
 <div class="cell">
@@ -262,18 +269,14 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <p>Analizując wykres, zauważamy znaczącą przewagę próbek pochodzących z Ameryki. Oceania natomiast jest niemal nieobecna w zestawieniu – w danych znajduje się tylko jedna próbka z tego kontynentu.</p>
 </section>
+</section>
 <section id="analiza---zmienne-ciągłe" class="level3">
 <h3 class="anchored" data-anchor-id="analiza---zmienne-ciągłe">4.2. Analiza - zmienne ciągłe</h3>
-<p><br></p>
-<p><strong>4.3.1. Wpływ zmiennych <code>Flavor</code>, <code>Aroma</code>, <code>Acidity</code>, <code>Aftertaste</code></strong></p>
+<p>W tej części postaramy się zbadać jak cechy takie jak (<code>Flavor</code>), (<code>Aroma</code>), (<code>Acidity</code>), (<code>Aftertaste</code>), (<code>Moisture</code>) czy (<code>Altitude</code>) wpływają na ogólny smak kawy.</p>
+<section id="wpływ-zmiennych-flavor-aroma-acidity-aftertaste" class="level4">
+<h4 class="anchored" data-anchor-id="wpływ-zmiennych-flavor-aroma-acidity-aftertaste">4.2.1. Wpływ zmiennych <code>Flavor</code>, <code>Aroma</code>, <code>Acidity</code>, <code>Aftertaste</code></h4>
 <p><strong>a) Rozkłady</strong></p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
-`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
-`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
-`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'</code></pre>
-</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -282,7 +285,8 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować zależność ta jest monotoniczna, dlatego estymowana wartość korelacji dla estymatora korelacji Spearmanna powinna przyjmować wartości dodatnie.</p>
+<p>Powyższe wykresy estymują gęstość rozkładów dla poszczególnych zmiennych ciągłych. Jak możemy zauważyć,</p>
+<p><strong>b) Zależności pomiędzy zmiennymi</strong></p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -292,8 +296,8 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>Powyższe wykresy estymują gęstość rozkładów dla poszczególnych zmiennych ciągłych. Jak możemy zauważyć,</p>
-<p><strong>b) Korelacje pomiędzy zmiennymi</strong></p>
+<p>Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować punkty układają się wzdłuż krzywej regresji, dlatego możemy się spodziewać, że korelacja jest niezerowa.</p>
+<p><br></p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -303,22 +307,34 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (Aroma), kwasowością (Acidity), smakiem (Flavour), posmakiem (Aftertaste), wilgotnością ziaren (Moisture), wysokością upraw (altitude_mean_meters) oraz ogólną oceną kawy (Total.Cup.Points). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).</p>
-<p>Zauważalna jest bardzo słaba korelacja między zmiennymi Moisture i Altitude – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że <strong>przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw</strong>.</p>
-<p>Najsilniejsze korelacje z ogólną oceną kawy (Total.Cup.Points) występują dla parametrów Flavor i Aftertaste – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.</p>
+<p><strong>c) Korelacja</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (<code>Aroma</code>), kwasowością (<code>Acidity</code>), smakiem (<code>Flavour</code>), posmakiem (<code>Aftertaste</code>), wilgotnością ziaren (<code>Moisture</code>), wysokością upraw (<code>altitude_mean_meters</code>) oraz ogólną oceną kawy (<code>Total.Cup.Points</code>). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).</p>
+<p>Zauważalna jest bardzo słaba korelacja między zmiennymi <code>Moisture</code> i <code>Altitude</code> – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że <strong>przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw</strong>.</p>
+<p>Najsilniejsze korelacje z ogólną oceną kawy (<code>Total.Cup.Points</code>) występują dla parametrów <code>Flavor</code> i <code>Aftertaste</code> – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.</p>
 <p>Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.</p>
+</section>
 </section>
 <section id="analiza---zmienne-kategoryczne" class="level3">
 <h3 class="anchored" data-anchor-id="analiza---zmienne-kategoryczne">4.3. Analiza - zmienne kategoryczne</h3>
 <p>W tej części skupimy się na analizie wpływu zmiennych <code>Processing.Method</code> oraz <code>Country.of.Origin</code> na oceny sensoryczne, a ostatecznie na ogólną ewaluację smaku kawy.</p>
-<p><strong>4.3.1. Wpływ zmiennej <code>Processing.Method</code></strong></p>
+<section id="wpływ-zmiennej-processing.method" class="level4">
+<h4 class="anchored" data-anchor-id="wpływ-zmiennej-processing.method">4.3.1. Wpływ zmiennej <code>Processing.Method</code></h4>
 <p>Przeanalizowano, jak różne metody przetwarzania ziaren kawy wpływają na dwie wybrane cechy sensoryczne - <code>Flavor</code> (<em>wykres a</em>) oraz <code>Aroma</code> (<em>wykres b</em>), a także na ogólną jakość kawy, wyrażoną przez <code>Total.Cup.Points</code> (<em>wykres c</em>).</p>
 <p><strong>a)</strong></p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="coffee-quality_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -331,7 +347,7 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="coffee-quality_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -342,20 +358,22 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="coffee-quality_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Podobnie jak w przypadku zmiennych <code>Flavor</code> i <code>Aroma</code>, metody przetwarzania ziaren kawy mają zbliżony wpływ na zmienną <code>Total.Cup.Points</code>, co potwierdzają boxploty – mediana oraz IQR są podobne dla wszystkich metod. Takie wyniki były w pewnym stopniu oczekiwane, biorąc pod uwagę brak istotnych różnic w ocenach <code>Flavor</code> i <code>Aroma</code>, które składają się na ostateczną ocenę jakości kawy. W związku z tym, nie możemy jednoznacznie wskazać metody przetwarzania, która gwarantuje najwyższą jakość kawy, ponieważ wszystkie metody wydają się dawać podobne rezultaty w kontekście <code>Total.Cup.Points</code>.</p>
-<p><strong>4.3.2. Wpływ zmiennej <code>Country.of.Origin</code></strong></p>
+</section>
+<section id="wpływ-zmiennej-country.of.origin" class="level4">
+<h4 class="anchored" data-anchor-id="wpływ-zmiennej-country.of.origin">4.3.2. Wpływ zmiennej <code>Country.of.Origin</code></h4>
 <p>Celem tej analizy jest określenie, który kraj produkuje najlepszą kawę. Ze względu na dużą liczbę krajów w naszym zbiorze danych, na początek wykluczymy te, które mają mniej niż 30 obserwacji, ponieważ ich obecność mogłaby prowadzić do mniej wiarygodnych wniosków. Dodatkowo, skoncentrujemy się na krajach, których mediana punktacji <code>Total.Cup.Points</code> wynosi co najmniej 82 punkty, ponieważ międzynarodowe standardy uznają kawy oceniane na minimum 80 punktów za produkty najwyższej jakości.</p>
 <p>Zanim jednak do tego przejdziemy spójrzy jak wygląda ogólna punktacja oceny jakości kawy dla każdego z kontynetów.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="coffee-quality_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -366,7 +384,7 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="coffee-quality_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -375,6 +393,7 @@ ul.task-list li input[type="checkbox"] {
 <p>Podobnie, kraje takie jak Kolumbia i Kostaryka również wyróżniają się wysokimi wynikami. Choć Kolumbia ma wartości odstające poniżej dolnego rozkładu, jej rozstęp międzykwartylowy (IQR) jest stosunkowo mały, co sugeruje, że większość próbek charakteryzuje się podobnie wysoką jakością. Kostaryka, z medianą powyżej 82 punktów, również zalicza się do czołowych producentów kawy.</p>
 <p>Ciekawym przypadkiem jest Meksyk, który mimo największej liczby próbek (<em>rozdział 4.1.2, podpunkt b)</em>) nie znalazł się wśród krajów o najwyższej jakości kawie. Wynika to z niższych wyników <code>Total.Cup.Points</code>, co wyklucza go z rankingu najlepszych producentów.</p>
 <p>Co więcej, wyniki uzyskane w tej analizie są zgodne z międzynarodowymi rankingami producentów kawy. Przykładowo, wyszukując w internecie rankingi krajów słynących z najlepszej kawy, łatwo natrafimy na te same kraje, które znalazły się w naszej analizie: Brazylia, Kolumbia, Etiopia, Gwatemala oraz Kostaryka. Wszystkie te kraje pojawiają się na przedstawionym wykresie boxplot.</p>
+</section>
 </section>
 </section>
 <section id="podsumowanie" class="level2">

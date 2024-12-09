@@ -1,6 +1,7 @@
 ---
 title: "Analiza jakości kawy"
 authors: "Zuzanna Sosnowska, Jagoda Płócienniczak" 
+format: "html"
 ---
 
 ## 1. Wstęp
@@ -51,7 +52,7 @@ Dane, które analizujemy, obejmują szeroki zakres informacji dotyczących jako�
 
 -   **Color (kolor)** – kolor ziaren kawy (np. „green”, „yellow”).
 
--   **Species (gatunek)** – gatunek kawy: arabica lub robusta.
+-   **Species (gatunek)** – gatunek kawy: arabica.
 
 ### 3.3. Metadane o farmach (Farm Metadata)
 
@@ -101,14 +102,24 @@ library(statpsych)
 ```{r, echo=FALSE}
 # Oryginalne dane
 data <- read.csv("arabica_data_cleaned.csv")
-data <- head(data, -1)
+# Do pustych rubryk przypisujemy NA
 data[data == ""] <- NA
+
 ```
 
 ```{r, echo=FALSE}
 #Przesiewanie danych
 data_clean <- data[c("Country.of.Origin", "Processing.Method", "Aroma", "Flavor", "Acidity", "Aftertaste","Moisture", "altitude_mean_meters", "Total.Cup.Points")] |>
   mutate(Processing.Method = factor(Processing.Method),)
+
+# Nie bierzemy pod uwagę danych z ostatniego wiersza, ze względu na to, że zawiera błędy - ogólna ocena kawy nie może wynosić zero.
+data_clean <- head(data_clean, -1)
+
+# Jeśli wysokość nad poziomem morza przekracza 8000 metrów to uprawa kawy jest niemożlwa i w danych jest błąd.
+data_clean$altitude_mean_meters[data_clean$altitude_mean_meters > 8000] <- NA
+data_clean$Country.of.Origin[data_clean$Country.of.Origin == "Tanzania, United Republic Of"] <- "Tanzania"
+data_clean$Country.of.Origin[data_clean$Country.of.Origin == "Cote d?Ivoire"] <- "Cote d'ivoire"
+view(data_clean)
 ```
 
 ```{r, echo=FALSE, results='hide'}
@@ -129,7 +140,7 @@ sum(is.na(data_clean$Total.Cup.Points))
 
 Zanim przejdziemy do szczegółowej analizy danych, warto zacząć od przedstawienia podstawowych statystyk opisowych. Stanowią one fundament każdej analizy, umożliwiając lepsze zrozumienie ogólnych cech badanych zmiennych oraz ułatwiając interpretację wyników końcowych.
 
-**4.1.1. zmienne ciągłe**
+#### 4.1.1. Zmienne ciągłe
 
 Poniższa tabela przedstawia podstawowe statystyki opisowe dla zmiennych ciągłych, w tym: średnią, medianę, odchylenie standardowe, skośność, kurtozę oraz rozstęp z próby dla badanych parametrów.
 
@@ -223,13 +234,21 @@ kable(stats_description_a, format = "markdown", col.names = c("Zmienna", "Średn
 
 Zauważmy kilka faktów:
 
--   Dla zmiennych **Flavor, Aroma, Acidity, Aftertaste** różnice pomiędzy *medianą a średnią* wynoszą odpowiednio 0.056, 0.01, 0.039, 0.017 i we wszystkich przypadkach średnia arytmetyczna jest mniejsza od mediany. Świadczy to prawdopodobnie **o symetrii rozkładu** lub delikatnej lewostronnej skośności. Co więcej estymowana wartość skośności również sugeruje symetrię układu, ponieważ jest nieznacznie różna od zera. Dla zmiennej **Total.Cup.Points** różnica między medianą a średnią również jest mała, jednak wartość estymatora skośności mniejsza od -1 sugeruje **lewostronną skośność rozkładu.**
+-   Dla zmiennych **Flavor**, **Aroma**, **Acidity** i **Aftertaste** różnice między medianą a średnią są niewielkie (odpowiednio: 0.056, 0.01, 0.039, 0.017), a w każdym przypadku średnia jest nieco niższa od mediany. Taki układ wskazuje na niemal symetryczny rozkład lub delikatną skośność lewostronną. Dodatkowo, wartość estymowanej skośności jest bliska zeru, co również potwierdza, że rozkłady te są zbliżone do symetrycznych i ewentualne odchylenia są minimalne.
 
--   Dla parametrów **Flavor, Aroma, Acidity, Aftertaste** *odchylenie standardowe* wynosi w zaokrągleniu **0.3** i oznacza to, że większość obserwacji znajduje się w przedziale około **7.2–7.8**. To bardzo wąski przedział w kontekście pełnego zakresu 0–10. Podobnie dla rozstępu z próby różnica pomiędzy wartością najmniejszą a największą dla zadanych cech wynosi kolejno 2.75, 3.67, 3.5, 2.5.
+    Dla zmiennej **Total.Cup.Points** różnica między medianą a średnią również jest niewielka, ale wartość estymatora skośności poniżej -1 wskazuje na bardziej wyraźną lewostronną skośność. Oznacza to, że w tym przypadku rozkład jest lekko przesunięty, z dłuższym ogonem po stronie niższych wartości.
 
--   **Kurtoza** dla wszystkich cech jest **większa od 3**. Miara jaką jest kurtoza wskazuje nam, że dla zadane cechy mają rozkłady leptokurtyczne, tzn. ogony rozkładów są grube i intensywność wartości skrajnych jest większa niż dla rozkładu normalnego.
+    W przypadku zmiennej **Altitude** (wysokość uprawy) sytuacja jest odmienna: mediana jest mniejsza od średniej, co wskazuje na słabą prawostronną skośność. Potwierdza to wartość współczynnika skośności - wynosi ona ponad 0.5 co potwierdza nasze przypuszczenia.
 
-**4.1.2. zmienne kategoryczne**
+-   Dla zmiennych **Flavor**, **Aroma**, **Acidity** i **Aftertaste** odchylenie standardowe wynosi około **0.3**, co oznacza, że większość obserwacji jest skoncentrowana w wąskim zakresie wartości od około **7.2 do 7.8**. W porównaniu z pełnym zakresem możliwych wartości (0–10) wskazuje to na bardzo małą zmienność tych cech. Również analiza rozstępu próby (różnicy między wartością minimalną a maksymalną) dla tych parametrów pokazuje stosunkowo niewielkie rozproszenie: wynosi ono odpowiednio **2.75**, **3.67**, **3.5** i **2.5**.
+
+    Dla zmiennej **Total.Cup.Points** (ogólnej oceny kawy) odchylenie standardowe wynosi **2.686**, co w odniesieniu do pełnego zakresu **0–100** jest stosunkowo niską wartością. Wskazuje to, że ogólna ocena kawy również charakteryzuje się umiarkowaną zmiennością.
+
+    Natomiast dla cechy **Altitude** (wysokości uprawy) zarówno odchylenie standardowe, jak i rozstęp z próby przyjmują znacznie większe wartości w relacji do średniej wynoszącej. Świadczy to o dużym rozproszeniu danych w tym przypadku 4286.00, co oznacza, że wysokości upraw kawy są znacznie bardziej zróżnicowane niż pozostałe analizowane cechy.
+    
+-   Kurtoza dla wszystkich analizowanych cech jest większa niż 3, co oznacza, że rozkłady tych zmiennych są **leptokurtyczne**. Takie rozkłady charakteryzują się "grubszymi" ogonami, co wskazuje na wyższą intensywność wartości skrajnych w porównaniu do rozkładu normalnego. W praktyce oznacza to, że w danych występuje większa liczba ekstremalnych obserwacji niż w przypadku klasycznego rozkładu normalnego.
+
+#### 4.1.2. Zmienne kategoryczne
 
 Na poniższych wykresach przedstawiono rozkład częstości występowania poszczególnych kategorii zmiennych kategorycznych w badanych danych.
 
@@ -237,9 +256,9 @@ Na poniższych wykresach przedstawiono rozkład częstości występowania poszcz
 
 ```{r, echo = FALSE}
 ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = fct_infreq(Processing.Method))) +
-  geom_bar(fill = "lightblue") +
+  geom_bar(fill = "lightblue", color = "blue") +
   labs(title = "Częstość występowania metod przetwarzania ziaren kawy", x = "Metoda przetwarzania", y = "Liczba wystąpień") +
-  theme(plot.margin = margin(1, 1, 1, 1, "cm"), axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
 ```
 
 Najczęściej stosowaną metodą przetwarzania ziaren kawy jest "washed/wet", a zaraz za nią plasuje się metoda "natural/dry". Wysoka popularność tych metod rodzi pytanie, czy są one związane z wyższą jakością kawy. Choć na podstawie samej częstości ich występowania nie możemy tego jednoznacznie stwierdzić, stanowi to punkt wyjścia do dalszej analizy. Hipoteza ta zostanie szczegółowo zbadana w kolejnych częściach raportu (*rozdział 4.3.*).
@@ -248,9 +267,9 @@ Najczęściej stosowaną metodą przetwarzania ziaren kawy jest "washed/wet", a 
 
 ```{r, echo = FALSE}
 ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Country.of.Origin))) +
-  geom_bar(fill = "lightblue") +
+  geom_bar(fill = "lightblue", color = "blue") +
   labs(title = "Częstość występowania krajów pochodzenia ziaren kawy", x = "Kraj pochodzenia", y = "Liczba wystąpień") +
-  theme(plot.margin = margin(1, 1, 1, 1, "cm"), axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
 ```
 
 Powyższy wykres pokazuje dominację niektórych krajów w zestawieniu z innymi. Zauważmy, że najwięcej próbek pochodzi z Meksyku, Kolumbii i Gwatemali.
@@ -279,45 +298,18 @@ Aby spojrzeć na dane w szerszym kontekście, możemy przeanalizować je na pozi
 
 ```{r, echo = FALSE}
 ggplot(data=subset(data_clean, !is.na(Continent)), aes(x = fct_infreq(Continent))) +
-  geom_bar(fill = "lightblue") +
+  geom_bar(fill = "lightblue", color = "blue") +
   labs(title = "Częstość występowania kontynentów pochodzenia ziaren kawy", x = "Kontynent", y = "Liczba wystąpień") +
-  theme(plot.margin = margin(1, 1, 1, 1, "cm"), axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.title = element_text(hjust = 0.5))
 ```
 Analizując wykres, zauważamy znaczącą przewagę próbek pochodzących z Ameryki. Oceania natomiast jest niemal nieobecna w zestawieniu – w danych znajduje się tylko jedna próbka z tego kontynentu.
 
 ### 4.2. Analiza - zmienne ciągłe
-<br>
+W tej części postaramy się zbadać jak cechy takie jak (`Flavor`), (`Aroma`), (`Acidity`), (`Aftertaste`), (`Moisture`) czy (`Altitude`) wpływają na ogólny smak kawy.
 
-**4.3.1. Wpływ zmiennych `Flavor`, `Aroma`, `Acidity`, `Aftertaste`**
+#### 4.2.1. Wpływ zmiennych `Flavor`, `Aroma`, `Acidity`, `Aftertaste`
 
 **a) Rozkłady**
-```{r, echo=FALSE}
-aftertaste_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aftertaste)) + 
-    geom_point(col = "#00FF00") + 
-    geom_smooth(span = 0.2, col = "black") +
-    labs(x = "Ocena kawy", y = "Ocena posmaku")
-  
-flavor_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Flavor)) + 
-    geom_point(col = "#FC4E07") + 
-    geom_smooth(span = 0.2, col = "black") +
-  labs(x = "Ocena kawy", y = "Ocena smaku")
-
-acidity_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Acidity)) + 
-    geom_point(col = "#E7B800") + 
-    geom_smooth(span = 0.2, col = "black") +
-  labs(x = "Ocena kawy", y = "Ocena kwasowości")
-
-aroma_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aroma)) + 
-    geom_point(col = "#00AFBB") + 
-    geom_smooth(span = 0.2, col = "black") + 
-  labs(x = "Ocena kawy", y = "Ocena aromatu")
-
-  
-
-(aftertaste_cor | flavor_cor) / (acidity_cor | aroma_cor) + plot_annotation(
-  title = "Zależność między ogólną oceną kawy a poszczególnymi cechami")
-```
-Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować zależność ta jest monotoniczna, dlatego estymowana wartość korelacji dla estymatora korelacji Spearmanna powinna przyjmować wartości dodatnie.
 
 ```{r, echo=FALSE}
 plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
@@ -353,7 +345,56 @@ plot_aftertaste <- ggplot(data_clean, aes(x = Aftertaste)) +
 
 Powyższe wykresy estymują gęstość rozkładów dla poszczególnych zmiennych ciągłych. Jak możemy zauważyć,
 
-**b) Korelacje pomiędzy zmiennymi**
+
+**b) Zależności pomiędzy zmiennymi**
+
+```{r, echo=FALSE, message=FALSE}
+aftertaste_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aftertaste)) + 
+    geom_point(col = "#00FF00") + 
+    geom_smooth(span = 0.2, col = "black") +
+    labs(x = "Ocena kawy", y = "Ocena posmaku")
+  
+flavor_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Flavor)) + 
+    geom_point(col = "#FC4E07") + 
+    geom_smooth(span = 0.2, col = "black") +
+  labs(x = "Ocena kawy", y = "Ocena smaku")
+
+acidity_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Acidity)) + 
+    geom_point(col = "#E7B800") + 
+    geom_smooth(span = 0.2, col = "black") +
+  labs(x = "Ocena kawy", y = "Ocena kwasowości")
+
+aroma_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aroma)) + 
+    geom_point(col = "#00AFBB") + 
+    geom_smooth(span = 0.2, col = "black") + 
+  labs(x = "Ocena kawy", y = "Ocena aromatu")
+
+  
+
+(aftertaste_cor | flavor_cor) / (acidity_cor | aroma_cor) + plot_annotation(
+  title = "Zależność między ogólną oceną kawy (Total.Cup.Points) a poszczególnymi cechami")
+```
+
+Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować punkty układają się wzdłuż krzywej regresji, dlatego możemy się spodziewać, że korelacja jest niezerowa.
+
+<br>
+
+```{r, echo=FALSE, results='hide'}
+moisture_cor <- ggplot(data_clean[!is.na(data_clean$Moisture), ], aes(x=Total.Cup.Points, y=Moisture)) + 
+    geom_point(col = "#00FF00") + 
+    labs(x = "Ocena kawy", y = "Wilgotność ziaren kawy")
+  
+altitude_cor <- ggplot(data_clean[!is.na(data_clean$altitude_mean_meters), ], aes(x=Total.Cup.Points, y=altitude_mean_meters)) + 
+    geom_point(col = "#FC4E07") + 
+  labs(x = "Ocena kawy", y = "Wysokość uprawy")
+
+moisture_cor + altitude_cor
+
+```
+
+
+**c) Korelacja**
+
 ```{r, echo = FALSE}
 cor_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Moisture", "altitude_mean_meters", "Total.Cup.Points")]
 
@@ -373,11 +414,11 @@ ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
   labs(title = "Heatmapa korelacji", x = "", y = "")
 ```
 
-Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (Aroma), kwasowością (Acidity), smakiem (Flavour), posmakiem (Aftertaste), wilgotnością ziaren (Moisture), wysokością upraw (altitude_mean_meters) oraz ogólną oceną kawy (Total.Cup.Points). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).
+Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (`Aroma`), kwasowością (`Acidity`), smakiem (`Flavour`), posmakiem (`Aftertaste`), wilgotnością ziaren (`Moisture`), wysokością upraw (`altitude_mean_meters`) oraz ogólną oceną kawy (`Total.Cup.Points`). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).
 
-Zauważalna jest bardzo słaba korelacja między zmiennymi Moisture i Altitude – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że **przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw**.
+Zauważalna jest bardzo słaba korelacja między zmiennymi `Moisture` i `Altitude` – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że **przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw**.
 
-Najsilniejsze korelacje z ogólną oceną kawy (Total.Cup.Points) występują dla parametrów Flavor i Aftertaste – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.
+Najsilniejsze korelacje z ogólną oceną kawy (`Total.Cup.Points`) występują dla parametrów `Flavor` i `Aftertaste` – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.
 
 Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.
 
@@ -385,7 +426,7 @@ Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną 
 
 W tej części skupimy się na analizie wpływu zmiennych `Processing.Method` oraz `Country.of.Origin` na oceny sensoryczne, a ostatecznie na ogólną ewaluację smaku kawy.
 
-**4.3.1. Wpływ zmiennej `Processing.Method`**
+#### 4.3.1. Wpływ zmiennej `Processing.Method`
 
 Przeanalizowano, jak różne metody przetwarzania ziaren kawy wpływają na dwie wybrane cechy sensoryczne - `Flavor` (*wykres a*) oraz `Aroma` (*wykres b*), a także na ogólną jakość kawy, wyrażoną przez `Total.Cup.Points` (*wykres c*). 
 
@@ -434,7 +475,7 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Me
 Podobnie jak w przypadku zmiennych `Flavor` i `Aroma`, metody przetwarzania ziaren kawy mają zbliżony wpływ na zmienną `Total.Cup.Points`, co potwierdzają boxploty – mediana oraz IQR są podobne dla wszystkich metod. Takie wyniki były w pewnym stopniu oczekiwane, biorąc pod uwagę brak istotnych różnic w ocenach `Flavor` i `Aroma`, które składają się na ostateczną ocenę jakości kawy. W związku z tym, nie możemy jednoznacznie wskazać metody przetwarzania, która gwarantuje najwyższą jakość kawy, ponieważ wszystkie metody wydają się dawać podobne rezultaty w kontekście `Total.Cup.Points`.
 
 
-**4.3.2. Wpływ zmiennej `Country.of.Origin`**
+#### 4.3.2. Wpływ zmiennej `Country.of.Origin`
 
 Celem tej analizy jest określenie, który kraj produkuje najlepszą kawę. Ze względu na dużą liczbę krajów w naszym zbiorze danych, na początek wykluczymy te, które mają mniej niż 30 obserwacji, ponieważ ich obecność mogłaby prowadzić do mniej wiarygodnych wniosków. Dodatkowo, skoncentrujemy się na krajach, których mediana punktacji `Total.Cup.Points` wynosi co najmniej 82 punkty, ponieważ międzynarodowe standardy uznają kawy oceniane na minimum 80 punktów za produkty najwyższej jakości.
 
@@ -456,7 +497,7 @@ continent_data <- data_clean %>%
 ggplot(continent_data, aes(x = Continent, y = Total.Cup.Points, fill = Continent)) +
   geom_boxplot(width=0.35,  staplewidth=0.25,coef=3) +
   labs(title = "Boxplot ocen ogólnych według kontynentów", x = "Kontynent", y = "Ocena ogólna", caption="Wartości nietypowe zdefiniowano siatką Tukeya ze stałą 3") +
-  theme(plot.margin = margin(1, 1, 1, 1, "cm"), plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Na podstawie powyższego wykresu pudełkowego można zauważyć, że **mediana oceny ogólnej kawy jest najwyższa w przypadku Afryki**. Może to sugerować, że kraje afrykańskie produkują kawy o wyższej jakości. Dodatkowo, górny wąs wykresu dla Afryki przekracza wartość 90 i jest wyraźnie dłuższy niż dolny wąs. Świadczy to o dużym zróżnicowaniu w ocenach, z przewagą wyższych wartości, co oznacza, że kawa z Afryki częściej osiąga wyjątkowo wysokie oceny.
