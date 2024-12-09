@@ -255,6 +255,8 @@ Na poniższych wykresach przedstawiono rozkład częstości występowania poszcz
 **a) Processing.Method**
 
 ```{r, echo = FALSE}
+#| fig.width: 6
+#| fig.height: 3
 ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = fct_infreq(Processing.Method))) +
   geom_bar(fill = "lightblue", color = "blue") +
   labs(title = "Częstość występowania metod przetwarzania ziaren kawy", x = "Metoda przetwarzania", y = "Liczba wystąpień") +
@@ -266,6 +268,8 @@ Najczęściej stosowaną metodą przetwarzania ziaren kawy jest "washed/wet", a 
 **b) Country.of.Origin**
 
 ```{r, echo = FALSE}
+#| fig.width: 6
+#| fig.height: 4
 ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Country.of.Origin))) +
   geom_bar(fill = "lightblue", color = "blue") +
   labs(title = "Częstość występowania krajów pochodzenia ziaren kawy", x = "Kraj pochodzenia", y = "Liczba wystąpień") +
@@ -297,6 +301,8 @@ data_clean$Continent <- countrycode(
 Aby spojrzeć na dane w szerszym kontekście, możemy przeanalizować je na poziomie kontynentów. Po przyporządkowaniu krajów do odpowiednich kontynentów uzyskujemy następujący obraz.
 
 ```{r, echo = FALSE}
+#| fig.width: 6
+#| fig.height: 3
 ggplot(data=subset(data_clean, !is.na(Continent)), aes(x = fct_infreq(Continent))) +
   geom_bar(fill = "lightblue", color = "blue") +
   labs(title = "Częstość występowania kontynentów pochodzenia ziaren kawy", x = "Kontynent", y = "Liczba wystąpień") +
@@ -312,10 +318,12 @@ W tej części postaramy się zbadać jak cechy takie jak (`Flavor`), (`Aroma`),
 **a) Rozkłady**
 
 ```{r, echo=FALSE}
+#| fig.width: 6
+#| fig.height: 3
 plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
   # geom_bar(fill = "lightblue") +
   geom_density(fill = "lightblue") + 
-  labs(title = "Rozkład Flavour", x = "Flavor", y = "Liczba obserwacji") +
+  labs(title = "Rozkład Flavor", x = "Flavor", y = "Liczba obserwacji") +
     xlim(5, 10) +
   theme_minimal(base_size = 8)
 
@@ -349,6 +357,8 @@ Powyższe wykresy estymują gęstość rozkładów dla poszczególnych zmiennych
 **b) Zależności pomiędzy zmiennymi**
 
 ```{r, echo=FALSE, message=FALSE}
+#| fig.width: 6
+#| fig.height: 4
 aftertaste_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aftertaste)) + 
     geom_point(col = "#00FF00") + 
     geom_smooth(span = 0.2, col = "black") +
@@ -369,10 +379,9 @@ aroma_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aroma)) +
     geom_smooth(span = 0.2, col = "black") + 
   labs(x = "Ocena kawy", y = "Ocena aromatu")
 
-  
 
 (aftertaste_cor | flavor_cor) / (acidity_cor | aroma_cor) + plot_annotation(
-  title = "Zależność między ogólną oceną kawy (Total.Cup.Points) a poszczególnymi cechami")
+  title = "Zależność między oceną kawy (Total.Cup.Points) a poszczególnymi cechami", theme = theme(plot.title = element_text(size = 12)))
 ```
 
 Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować punkty układają się wzdłuż krzywej regresji, dlatego możemy się spodziewać, że korelacja jest niezerowa.
@@ -380,6 +389,8 @@ Na powyższych wykresach przedstawiona została zależność oceny kawy od wybra
 <br>
 
 ```{r, echo=FALSE, results='hide'}
+#| fig.width: 6
+#| fig.height: 3
 moisture_cor <- ggplot(data_clean[!is.na(data_clean$Moisture), ], aes(x=Total.Cup.Points, y=Moisture)) + 
     geom_point(col = "#00FF00") + 
     labs(x = "Ocena kawy", y = "Wilgotność ziaren kawy")
@@ -388,14 +399,15 @@ altitude_cor <- ggplot(data_clean[!is.na(data_clean$altitude_mean_meters), ], ae
     geom_point(col = "#FC4E07") + 
   labs(x = "Ocena kawy", y = "Wysokość uprawy")
 
-moisture_cor + altitude_cor
+moisture_cor +altitude_cor
 
 ```
-
 
 **c) Korelacja**
 
 ```{r, echo = FALSE}
+#| fig.width: 6
+#| fig.height: 4
 cor_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Moisture", "altitude_mean_meters", "Total.Cup.Points")]
 
 cor_matrix <- cor(cor_data, use = "complete.obs", method = "spearman")
@@ -433,6 +445,8 @@ Przeanalizowano, jak różne metody przetwarzania ziaren kawy wpływają na dwie
 **a)**
 
 ```{r, echo = FALSE}
+#| fig.width: 6
+#| fig.height: 4
 ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Method, y = Flavor, fill=Processing.Method)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.title = element_text(hjust = 0.5)) +
@@ -450,6 +464,8 @@ Z kolei metoda "Washed/Wet", mimo największej liczby obserwacji, charakteryzuje
 **b)**
 
 ```{r, echo = FALSE}
+#| fig.width: 6
+#| fig.height: 4
 ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Method, y = Aroma, fill=Processing.Method)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.title = element_text(hjust = 0.5)) +
@@ -458,21 +474,22 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Me
   geom_hline(yintercept = 7.59, linetype = "dashed", color = "black")
 
 ```
-Dla zmiennej `Aroma` zaobserwowano podobne wzorce jak w przypadku `Flavor`. Różnice między medianami ocen w poszczególnych metodach przetwarzania są niewielkie, a wartości IQR również są zbliżone. Można jednak zauważyć, że metoda "Natural/Dry" wydaje się nieco lepsza pod względem `Aroma`, ponieważ charakteryzuje się mniejszym rozproszeniem wyników w porównaniu do metody "Washed/Wet", a jej wartości odstające znajdują się głównie w górnej części rozkładu. Warto jednak zwrócić uwagę na różnicę w liczebności próbek, gdzie dla metody "Natural / Dry" próba jest około trzykrotnie mniejsza. Z tego powodu trudno jednoznacznie stwierdzić, która metoda przetwarzania dominuje w tej kategorii, ponieważ zależy to od tego, czy priorytetem jest stabilność wyników, czy też potencjał uzyskania wyższych ocen.
-
+Dla zmiennej `Aroma` zaobserwowano podobne wzorce jak w przypadku `Flavor`. Różnice między medianami ocen w poszczególnych metodach przetwarzania są niewielkie, a wartości IQR również są zbliżone. Można jednak zauważyć, że metoda "Natural/Dry" wydaje się nieco lepsza pod względem `Aroma`, ponieważ charakteryzuje się mniejszym rozproszeniem wyników w porównaniu do metody "Washed/Wet", a jej wartości odstające znajdują się głównie w górnej części rozkładu. Warto jednak zwrócić uwagę na różnicę w liczebności próbek, gdzie dla metody "Natural / Dry" próba jest około trzykrotnie mniejsza. Z tego powodu trudno jednoznacznie stwierdzić, która metoda przetwarzania dominuje w tej kategorii.
 
 **c)**
 
+Podobnie jak w przypadku zmiennych `Flavor` i `Aroma`, metody przetwarzania ziaren kawy mają zbliżony wpływ na zmienną `Total.Cup.Points`, co potwierdzają boxploty – mediana oraz IQR są podobne dla wszystkich metod. Takie wyniki były w pewnym stopniu oczekiwane, biorąc pod uwagę brak istotnych różnic w ocenach `Flavor` i `Aroma`, które składają się na ostateczną ocenę jakości kawy. W związku z tym, nie możemy jednoznacznie wskazać metody przetwarzania, która gwarantuje najwyższą jakość kawy, ponieważ wszystkie metody wydają się dawać podobne rezultaty w kontekście `Total.Cup.Points`.
+
 ```{r, echo = FALSE}
+#| fig.width: 6
+#| fig.height: 4
 ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Method, y = Total.Cup.Points, fill=Processing.Method)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        plot.title = element_text(hjust = 0.5)) +
+        plot.title = element_text(hjust = 0.3)) +
   labs(title="Total.Cup.Points w zależności od metody przetwarzania", x = "Metoda przetwarzania") +
   geom_boxplot() +
   geom_hline(yintercept = 82.7, linetype = "dashed", color = "black")
 ```
-
-Podobnie jak w przypadku zmiennych `Flavor` i `Aroma`, metody przetwarzania ziaren kawy mają zbliżony wpływ na zmienną `Total.Cup.Points`, co potwierdzają boxploty – mediana oraz IQR są podobne dla wszystkich metod. Takie wyniki były w pewnym stopniu oczekiwane, biorąc pod uwagę brak istotnych różnic w ocenach `Flavor` i `Aroma`, które składają się na ostateczną ocenę jakości kawy. W związku z tym, nie możemy jednoznacznie wskazać metody przetwarzania, która gwarantuje najwyższą jakość kawy, ponieważ wszystkie metody wydają się dawać podobne rezultaty w kontekście `Total.Cup.Points`.
 
 
 #### 4.3.2. Wpływ zmiennej `Country.of.Origin`
@@ -482,6 +499,8 @@ Celem tej analizy jest określenie, który kraj produkuje najlepszą kawę. Ze w
 Zanim jednak do tego przejdziemy spójrzy jak wygląda ogólna punktacja oceny jakości kawy dla każdego z kontynetów.
 
 ```{r, echo=FALSE}
+#| fig.width: 6
+#| fig.height: 3
 # Analiza kontynentów
 continent_data <- data_clean %>%
   filter(!is.na(Continent) & !is.na(Total.Cup.Points)) %>%
@@ -514,6 +533,8 @@ filtered_data <- data_clean %>%
   filter(mediana >= 82 & Liczba_Obserwacji >= 30) %>%
   inner_join(data_clean, by = "Country.of.Origin")
 
+#| fig.width: 6
+#| fig.height: 3
 ggplot(data = filtered_data, aes(x = Country.of.Origin, y = Total.Cup.Points, fill=Country.of.Origin)) +
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
@@ -532,3 +553,9 @@ Co więcej, wyniki uzyskane w tej analizie są zgodne z międzynarodowymi rankin
 
 
 ## 5. Podsumowanie
+Analiza jakości kawy wykazała, że cechy sensoryczne mają kluczowe znaczenie dla oceny ogólnej. Największy wpływ na wynik (`Total.Cup.Points`) mają smak (`Flavor`) oraz posmak (`Aftertaste`), natomiast aromat (`Aroma`) i kwasowość (`Acidity`) również odgrywają istotną rolę, choć w mniejszym stopniu. Z kolei wilgotność ziaren (`Moisture`) oraz wysokość upraw (`Altitude`) miały jedynie marginalny wpływ na ocenę.
+
+Zaskakującym wynikiem jest brak jednoznacznej zależności między wysokością upraw a jakością kawy, co sugeruje słaba korelacja między tymi zmiennymi. Ponadto analiza metod przetwarzania wykazała brak istotnych różnic w ocenach sensorycznych, a najpopularniejsza metoda nie okazała się najlepsza. Wskazuje to, że to cechy samej kawy mają większy wpływ na jej jakość niż sposób jej obróbki.
+
+Wyniki analizy wskazują, że region pochodzenia ma istotny wpływ na unikalne cechy sensoryczne kawy. Etiopia, która uzyskała najwyższe oceny, wyróżnia się jako najlepszy producent kawy. Ogólnie rzecz biorąc, kraje afrykańskie osiągnęły wysokie wyniki w ocenie końcowej jakości kawy. Co więcej, nasz ranking – obejmujący Etiopię, Kolumbię, Brazylię i Kostarykę – jest zgodny z powszechnie dostępnymi danymi i potwierdza reputację tych krajów jako czołowych producentów kawy.
+
