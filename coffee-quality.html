@@ -264,9 +264,16 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="analiza---zmienne-ciągłe" class="level3">
 <h3 class="anchored" data-anchor-id="analiza---zmienne-ciągłe">4.2. Analiza - zmienne ciągłe</h3>
-<p><br> <strong>4.3.1. Wpływ zmiennych <code>Flavor</code>, <code>Aroma</code>, <code>Acidity</code>, <code>Aftertaste</code></strong></p>
+<p><br></p>
+<p><strong>4.3.1. Wpływ zmiennych <code>Flavor</code>, <code>Aroma</code>, <code>Acidity</code>, <code>Aftertaste</code></strong></p>
 <p><strong>a) Rozkłady</strong></p>
 <div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
+`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
+`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
+`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'</code></pre>
+</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -275,8 +282,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>Na załączonych powyżej wykresach przedstawiony został rozkład dla zmiennych kategorycznych definiujących smak kawy (Flavor), zapach/aromat kawy (Aroma), kwasowość (Acidity) oraz posmak czyli wrażenia ogólne po spożyciu kawy (Aftertaste).</p>
-<p><strong>b) Korelacje pomiędzy zmiennymi</strong></p>
+<p>Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować zależność ta jest monotoniczna, dlatego estymowana wartość korelacji dla estymatora korelacji Spearmanna powinna przyjmować wartości dodatnie.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -286,10 +292,8 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (Aroma), kwasowością (Acidity), smakiem (Flavour), posmakiem (Aftertaste), wilgotnością ziaren (Moisture), wysokością upraw (altitude_mean_meters) oraz ogólną oceną kawy (Total.Cup.Points). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).</p>
-<p>Zauważalna jest bardzo słaba korelacja między zmiennymi Moisture i Altitude – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że <strong>przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw</strong>.</p>
-<p>Najsilniejsze korelacje z ogólną oceną kawy (Total.Cup.Points) występują dla parametrów Flavor i Aftertaste – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.</p>
-<p>Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.</p>
+<p>Powyższe wykresy estymują gęstość rozkładów dla poszczególnych zmiennych ciągłych. Jak możemy zauważyć,</p>
+<p><strong>b) Korelacje pomiędzy zmiennymi</strong></p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -299,6 +303,10 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
+<p>Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (Aroma), kwasowością (Acidity), smakiem (Flavour), posmakiem (Aftertaste), wilgotnością ziaren (Moisture), wysokością upraw (altitude_mean_meters) oraz ogólną oceną kawy (Total.Cup.Points). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).</p>
+<p>Zauważalna jest bardzo słaba korelacja między zmiennymi Moisture i Altitude – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że <strong>przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw</strong>.</p>
+<p>Najsilniejsze korelacje z ogólną oceną kawy (Total.Cup.Points) występują dla parametrów Flavor i Aftertaste – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.</p>
+<p>Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.</p>
 </section>
 <section id="analiza---zmienne-kategoryczne" class="level3">
 <h3 class="anchored" data-anchor-id="analiza---zmienne-kategoryczne">4.3. Analiza - zmienne kategoryczne</h3>

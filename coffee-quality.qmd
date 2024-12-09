@@ -287,9 +287,37 @@ Analizując wykres, zauważamy znaczącą przewagę próbek pochodzących z Amer
 
 ### 4.2. Analiza - zmienne ciągłe
 <br>
+
 **4.3.1. Wpływ zmiennych `Flavor`, `Aroma`, `Acidity`, `Aftertaste`**
 
-**a) Rozkłady** 
+**a) Rozkłady**
+```{r, echo=FALSE}
+aftertaste_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aftertaste)) + 
+    geom_point(col = "#00FF00") + 
+    geom_smooth(span = 0.2, col = "black") +
+    labs(x = "Ocena kawy", y = "Ocena posmaku")
+  
+flavor_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Flavor)) + 
+    geom_point(col = "#FC4E07") + 
+    geom_smooth(span = 0.2, col = "black") +
+  labs(x = "Ocena kawy", y = "Ocena smaku")
+
+acidity_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Acidity)) + 
+    geom_point(col = "#E7B800") + 
+    geom_smooth(span = 0.2, col = "black") +
+  labs(x = "Ocena kawy", y = "Ocena kwasowości")
+
+aroma_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aroma)) + 
+    geom_point(col = "#00AFBB") + 
+    geom_smooth(span = 0.2, col = "black") + 
+  labs(x = "Ocena kawy", y = "Ocena aromatu")
+
+  
+
+(aftertaste_cor | flavor_cor) / (acidity_cor | aroma_cor) + plot_annotation(
+  title = "Zależność między ogólną oceną kawy a poszczególnymi cechami")
+```
+Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować zależność ta jest monotoniczna, dlatego estymowana wartość korelacji dla estymatora korelacji Spearmanna powinna przyjmować wartości dodatnie.
 
 ```{r, echo=FALSE}
 plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
@@ -323,8 +351,7 @@ plot_aftertaste <- ggplot(data_clean, aes(x = Aftertaste)) +
 (plot_flavour + plot_aroma) / (plot_acidity + plot_aftertaste)
 ```
 
-Na załączonych powyżej wykresach przedstawiony został rozkład dla zmiennych kategorycznych definiujących smak kawy (Flavor), zapach/aromat kawy (Aroma), kwasowość (Acidity) oraz posmak czyli wrażenia ogólne po spożyciu kawy (Aftertaste).
-
+Powyższe wykresy estymują gęstość rozkładów dla poszczególnych zmiennych ciągłych. Jak możemy zauważyć,
 
 **b) Korelacje pomiędzy zmiennymi**
 ```{r, echo = FALSE}
@@ -353,11 +380,6 @@ Zauważalna jest bardzo słaba korelacja między zmiennymi Moisture i Altitude �
 Najsilniejsze korelacje z ogólną oceną kawy (Total.Cup.Points) występują dla parametrów Flavor i Aftertaste – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.
 
 Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.
-
-```{r, echo=FALSE}
-scatterplot_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Total.Cup.Points")]
-ggpairs(scatterplot_data, axisLabels = "show")
-```
 
 ### 4.3. Analiza - zmienne kategoryczne
 
@@ -405,7 +427,8 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Me
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.title = element_text(hjust = 0.5)) +
   labs(title="Total.Cup.Points w zależności od metody przetwarzania", x = "Metoda przetwarzania") +
-  geom_boxplot()
+  geom_boxplot() +
+  geom_hline(yintercept = 82.7, linetype = "dashed", color = "black")
 ```
 
 Podobnie jak w przypadku zmiennych `Flavor` i `Aroma`, metody przetwarzania ziaren kawy mają zbliżony wpływ na zmienną `Total.Cup.Points`, co potwierdzają boxploty – mediana oraz IQR są podobne dla wszystkich metod. Takie wyniki były w pewnym stopniu oczekiwane, biorąc pod uwagę brak istotnych różnic w ocenach `Flavor` i `Aroma`, które składają się na ostateczną ocenę jakości kawy. W związku z tym, nie możemy jednoznacznie wskazać metody przetwarzania, która gwarantuje najwyższą jakość kawy, ponieważ wszystkie metody wydają się dawać podobne rezultaty w kontekście `Total.Cup.Points`.
