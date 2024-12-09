@@ -255,7 +255,7 @@ Na poniższych wykresach przedstawiono rozkład częstości występowania poszcz
 **a) Processing.Method**
 
 ```{r, echo = FALSE}
-#| fig.width: 6
+#| fig.width: 8
 #| fig.height: 3
 ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = fct_infreq(Processing.Method))) +
   geom_bar(fill = "lightblue", color = "blue") +
@@ -268,8 +268,8 @@ Najczęściej stosowaną metodą przetwarzania ziaren kawy jest "washed/wet", a 
 **b) Country.of.Origin**
 
 ```{r, echo = FALSE}
-#| fig.width: 6
-#| fig.height: 4
+#| fig.width: 8
+#| fig.height: 3
 ggplot(data=subset(data_clean, !is.na(Country.of.Origin)), aes(x = fct_infreq(Country.of.Origin))) +
   geom_bar(fill = "lightblue", color = "blue") +
   labs(title = "Częstość występowania krajów pochodzenia ziaren kawy", x = "Kraj pochodzenia", y = "Liczba wystąpień") +
@@ -321,37 +321,35 @@ W tej części postaramy się zbadać jak cechy takie jak (`Flavor`), (`Aroma`),
 #| fig.width: 6
 #| fig.height: 3
 plot_flavour <- ggplot(data_clean, aes(x = Flavor)) +
-  # geom_bar(fill = "lightblue") +
-  geom_density(fill = "lightblue") + 
-  labs(title = "Rozkład Flavor", x = "Flavor", y = "Liczba obserwacji") +
-    xlim(5, 10) +
+  geom_density(fill = "#FC4E07") + 
+  labs(title = "Rozkład Smaku", x = "Smak", y = "Gęstość") +
+  xlim(5, 10) +
   theme_minimal(base_size = 8)
 
 plot_aroma <- ggplot(data_clean, aes(x = Aroma)) +
-  # geom_bar(fill = "lightgreen") +
-  geom_density(fill = "lightgreen") + 
-  labs(title = "Rozkład Aroma", x = "Aroma", y = "Liczba obserwacji") +
+  geom_density(fill = "#00AFBB") + 
+  labs(title = "Rozkład Aromatu", x = "Aromat", y = "Gęstość") +
   xlim(5, 10) +
   theme_minimal(base_size = 8)
 
 plot_acidity <- ggplot(data_clean, aes(x = Acidity)) +
-  # geom_bar(fill = "lightpink") +
-  geom_density(fill = "lightpink") + 
-  labs(title = "Rozkład Acidity", x = "Acidity", y = "Liczba obserwacji") +
+  geom_density(fill = "#E7B800") + 
+  labs(title = "Rozkład Kwasowości", x = "Kwasowość", y = "Gęstość") +
   xlim(5, 10) +
   theme_minimal(base_size = 8)
 
 plot_aftertaste <- ggplot(data_clean, aes(x = Aftertaste)) +
-  # geom_bar(fill = "lightgoldenrod") +
-    geom_density(fill = "lightgoldenrod") + 
-  labs(title = "Rozkład Aftertaste", x = "Aftertaste", y = "Liczba obserwacji") +
+  geom_density(fill = "lightgreen") + 
+  labs(title = "Rozkład Posmaku", x = "Posmak", y = "Gęstość") +
   xlim(5, 10) +
   theme_minimal(base_size = 8)
 
-(plot_flavour + plot_aroma) / (plot_acidity + plot_aftertaste)
+# Wyświetlenie wykresów w układzie
+(plot_flavour + plot_aroma) / (plot_acidity + plot_aftertaste) + plot_annotation(
+  title = "Gęstości dla poszczególnych zmiennych ciągłych")
 ```
 
-Powyższe wykresy estymują gęstość rozkładów dla poszczególnych zmiennych ciągłych. Jak możemy zauważyć,
+Na podstawie wykresów gęstości można stwierdzić, że statystyki opisowe obliczone w *rozdziale 4.1.1* są zgodne z naszymi założeniami dotyczącymi rozkładu danych. Wartość modalna, czyli punkt, w którym gęstość osiąga maksimum (tzw. "czubek górki"), znajduje się w przybliżeniu w okolicach 7.5 dla wszystkich analizowanych zmiennych. Dodatkowo, kształt wykresów sugeruje symetryczność rozkładu – brak wyraźnej skośności. Wartości mediany i średniej są również bliskie tej wartości, co potwierdza symetryczny charakter danych.
 
 
 **b) Zależności pomiędzy zmiennymi**
@@ -384,9 +382,10 @@ aroma_cor <- ggplot(data_clean, aes(x=Total.Cup.Points, y=Aroma)) +
   title = "Zależność między oceną kawy (Total.Cup.Points) a poszczególnymi cechami", theme = theme(plot.title = element_text(size = 12)))
 ```
 
-Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować punkty układają się wzdłuż krzywej regresji, dlatego możemy się spodziewać, że korelacja jest niezerowa.
+Na powyższych wykresach przedstawiono zależność między oceną ogólną kawy (`Total.Cup.Points`) a wybranymi cechami jakościowymi, takimi jak `Aroma`, `Flavor`, `Acidity` i `Aftertaste`. Punkty danych na wykresach układają się wzdłuż linii regresji, co sugeruje istnienie istotnej korelacji między zmiennymi. Ponadto, widoczna jest monotoniczna, rosnąca zależność – wyższe wartości ocen poszczególnych cech są związane z wyższymi ocenami ogólnymi kawy.
 
 <br>
+Przyjrzyjmy się teraz zależności między zmiennymi `Altitude` i `Moisture` a oceną ogólną (`Total.Cup.Points`). Punkty danych układają się w sposób chaotyczny, tworząc rozproszoną "chmurę". Brak wyraźnego wzorca w rozmieszczeniu punktów sugeruje, że te zmienne nie mają istotnego związku z oceną ogólną, a jeśli jakakolwiek zależność występuje, jest ona minimalna.
 
 ```{r, echo=FALSE, results='hide'}
 #| fig.width: 6
@@ -397,28 +396,39 @@ moisture_cor <- ggplot(data_clean[!is.na(data_clean$Moisture), ], aes(x=Total.Cu
   
 altitude_cor <- ggplot(data_clean[!is.na(data_clean$altitude_mean_meters), ], aes(x=Total.Cup.Points, y=altitude_mean_meters)) + 
     geom_point(col = "#FC4E07") + 
+  coord_cartesian(ylim = c(0, 3000)) +
   labs(x = "Ocena kawy", y = "Wysokość uprawy")
 
-moisture_cor +altitude_cor
+moisture_cor + altitude_cor + plot_annotation(
+  title = "Zależność między ogólną oceną kawy a wilgotnością ziaren i wysokością uprawy")
 
 ```
 
 **c) Korelacja**
 
+
 ```{r, echo = FALSE}
 #| fig.width: 6
-#| fig.height: 4
+#| fig.height: 3
+# Wybranie danych
 cor_data <- data_clean[c("Aroma", "Acidity", "Flavor", "Aftertaste", "Moisture", "altitude_mean_meters", "Total.Cup.Points")]
 
+# Obliczenie macierzy korelacji
 cor_matrix <- cor(cor_data, use = "complete.obs", method = "spearman")
 
+# Zmiana nazw kolumn i wierszy na polskie
+rownames(cor_matrix) <- c("Aromat", "Kwasowość", "Smak", "Posmak", "Wilgotność ziaren", "Wysokość uprawy", "Ocena ogólna kawy")
+colnames(cor_matrix) <- c("Aromat", "Kwasowość", "Smak", "Posmak", "Wilgotność ziaren", "Wysokość uprawy", "Ocena ogólna kawy")
+
+# Przekształcenie macierzy korelacji
 cor_melt <- melt(cor_matrix)
+
 # Tworzenie heatmapy z ggplot2
 ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
   geom_tile(color = "white") +
   geom_text(aes(label = round(value, 2)), color = "black", size = 4) +
-  scale_fill_gradientn(colors = c("lightblue","lightyellow", "red"), 
-                      values = scales::rescale(c(-0.21, 0.75, 1)), 
+  scale_fill_gradientn(colors = c("lightblue", "lightyellow", "red"), 
+                       values = scales::rescale(c(-0.21, 0.75, 1)), 
                        limits = c(-0.21, 1), 
                        name = "Korelacja") +
   theme_minimal() +
@@ -426,13 +436,15 @@ ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
   labs(title = "Heatmapa korelacji", x = "", y = "")
 ```
 
-Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (`Aroma`), kwasowością (`Acidity`), smakiem (`Flavour`), posmakiem (`Aftertaste`), wilgotnością ziaren (`Moisture`), wysokością upraw (`altitude_mean_meters`) oraz ogólną oceną kawy (`Total.Cup.Points`). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).
+Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (`Aroma`), kwasowością (`Acidity`), smakiem (`Flavour`), posmakiem (`Aftertaste`), wilgotnością ziaren (`Moisture`), wysokością upraw (`altitude_mean_meters`) oraz ogólną oceną kawy (`Total.Cup.Points`). Kolorystyka wykresu odzwierciedla siłę i kierunek korelacji – od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).
 
 Zauważalna jest bardzo słaba korelacja między zmiennymi `Moisture` i `Altitude` – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że **przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw**.
 
-Najsilniejsze korelacje z ogólną oceną kawy (`Total.Cup.Points`) występują dla parametrów `Flavor` i `Aftertaste` – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.
+Najsilniejsze korelacje z ogólną oceną kawy (`Total.Cup.Points`) występują dla parametrów `Flavor` i `Aftertaste` – ich wartości przekraczają 0.8, osiągając niemal 0.9. Są one oznaczone kolorem pomarańczowym.  Wynik ten wskazuje, że smak i posmak kawy są kluczowymi cechami wpływającymi na jej postrzeganie.
 
 Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.
+
+Warto zaznaczyć, że macierz korelacji została opracowana przy użyciu współczynnika korelacji rang Spearmana.
 
 ### 4.3. Analiza - zmienne kategoryczne
 
@@ -474,6 +486,7 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Me
   geom_hline(yintercept = 7.59, linetype = "dashed", color = "black")
 
 ```
+
 Dla zmiennej `Aroma` zaobserwowano podobne wzorce jak w przypadku `Flavor`. Różnice między medianami ocen w poszczególnych metodach przetwarzania są niewielkie, a wartości IQR również są zbliżone. Można jednak zauważyć, że metoda "Natural/Dry" wydaje się nieco lepsza pod względem `Aroma`, ponieważ charakteryzuje się mniejszym rozproszeniem wyników w porównaniu do metody "Washed/Wet", a jej wartości odstające znajdują się głównie w górnej części rozkładu. Warto jednak zwrócić uwagę na różnicę w liczebności próbek, gdzie dla metody "Natural / Dry" próba jest około trzykrotnie mniejsza. Z tego powodu trudno jednoznacznie stwierdzić, która metoda przetwarzania dominuje w tej kategorii.
 
 **c)**
@@ -490,7 +503,6 @@ ggplot(data=subset(data_clean, !is.na(Processing.Method)), aes(x = Processing.Me
   geom_boxplot() +
   geom_hline(yintercept = 82.7, linetype = "dashed", color = "black")
 ```
-
 
 #### 4.3.2. Wpływ zmiennej `Country.of.Origin`
 
@@ -523,7 +535,7 @@ Na podstawie powyższego wykresu pudełkowego można zauważyć, że **mediana o
 
 Dla Ameryki i Azji mediana ocen jest na zbliżonym poziomie. W przypadku Ameryki wykres pokazuje dłuższe wąsy, co wskazuje na większe rozproszenie danych – kawa pochodząca z tego regionu może być zarówno bardzo dobrej jakości, jak i przeciętnej. Natomiast w Azji wąsy są krótsze niż w Ameryce, co sugeruje mniejszą zmienność w ocenach kawy. Azjatycka kawa charakteryzuje się nieco niższą medianą, ale bardziej jednorodnymi ocenami w porównaniu do kawy z Ameryki.
 
-
+<br>
 ```{r, echo=FALSE}
 filtered_data <- data_clean %>%
   filter(!is.na(Country.of.Origin) & !is.na(Total.Cup.Points)) %>%

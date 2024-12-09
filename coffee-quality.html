@@ -240,7 +240,7 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="coffee-quality_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="576"></p>
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -251,7 +251,7 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="coffee-quality_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="576"></p>
+<p><img src="coffee-quality_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -285,7 +285,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>Powyższe wykresy estymują gęstość rozkładów dla poszczególnych zmiennych ciągłych. Jak możemy zauważyć,</p>
+<p>Na podstawie wykresów gęstości można stwierdzić, że statystyki opisowe obliczone w <em>rozdziale 4.1.1</em> są zgodne z naszymi założeniami dotyczącymi rozkładu danych. Wartość modalna, czyli punkt, w którym gęstość osiąga maksimum (tzw. “czubek górki”), znajduje się w przybliżeniu w okolicach 7.5 dla wszystkich analizowanych zmiennych. Dodatkowo, kształt wykresów sugeruje symetryczność rozkładu – brak wyraźnej skośności. Wartości mediany i średniej są również bliskie tej wartości, co potwierdza symetryczny charakter danych.</p>
 <p><strong>b) Zależności pomiędzy zmiennymi</strong></p>
 <div class="cell">
 <div class="cell-output-display">
@@ -296,8 +296,8 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>Na powyższych wykresach przedstawiona została zależność oceny kawy od wybranych cech. Jak możemy zaobserwować punkty układają się wzdłuż krzywej regresji, dlatego możemy się spodziewać, że korelacja jest niezerowa.</p>
-<p><br></p>
+<p>Na powyższych wykresach przedstawiono zależność między oceną ogólną kawy (<code>Total.Cup.Points</code>) a wybranymi cechami jakościowymi, takimi jak <code>Aroma</code>, <code>Flavor</code>, <code>Acidity</code> i <code>Aftertaste</code>. Punkty danych na wykresach układają się wzdłuż linii regresji, co sugeruje istnienie istotnej korelacji między zmiennymi. Ponadto, widoczna jest monotoniczna, rosnąca zależność – wyższe wartości ocen poszczególnych cech są związane z wyższymi ocenami ogólnymi kawy.</p>
+<p><br> Przyjrzyjmy się teraz zależności między zmiennymi <code>Altitude</code> i <code>Moisture</code> a oceną ogólną (<code>Total.Cup.Points</code>). Punkty danych układają się w sposób chaotyczny, tworząc rozproszoną “chmurę”. Brak wyraźnego wzorca w rozmieszczeniu punktów sugeruje, że te zmienne nie mają istotnego związku z oceną ogólną, a jeśli jakakolwiek zależność występuje, jest ona minimalna.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -317,10 +317,11 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (<code>Aroma</code>), kwasowością (<code>Acidity</code>), smakiem (<code>Flavour</code>), posmakiem (<code>Aftertaste</code>), wilgotnością ziaren (<code>Moisture</code>), wysokością upraw (<code>altitude_mean_meters</code>) oraz ogólną oceną kawy (<code>Total.Cup.Points</code>). Kolory na heatmapie odzwierciedlają siłę i kierunek korelacji, przechodząc od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).</p>
+<p>Powyższy wykres przedstawia heatmapę korelacji między różnymi cechami kawy: aromatem (<code>Aroma</code>), kwasowością (<code>Acidity</code>), smakiem (<code>Flavour</code>), posmakiem (<code>Aftertaste</code>), wilgotnością ziaren (<code>Moisture</code>), wysokością upraw (<code>altitude_mean_meters</code>) oraz ogólną oceną kawy (<code>Total.Cup.Points</code>). Kolorystyka wykresu odzwierciedla siłę i kierunek korelacji – od niebieskiego (korelacje ujemne), przez bladożółty (brak korelacji), do czerwonego (silne korelacje dodatnie).</p>
 <p>Zauważalna jest bardzo słaba korelacja między zmiennymi <code>Moisture</code> i <code>Altitude</code> – wartość bezwzględna tej korelacji jest mniejsza niż 0.2. Oznacza to, że te parametry mają niewielki związek z innymi zmiennymi na wykresie, co sugeruje, że <strong>przy wyborze kawy niekoniecznie powinniśmy się kierować wilgotnością ziaren czy wysokością upraw</strong>.</p>
-<p>Najsilniejsze korelacje z ogólną oceną kawy (<code>Total.Cup.Points</code>) występują dla parametrów <code>Flavor</code> i <code>Aftertaste</code> – ich wartości przekraczają 0.8, osiągając niemal 0.9. Na heatmapie są one oznaczone kolorem pomarańczowym. Sugeruje to, że smak i posmak kawy są kluczowe przy ocenie jej jakości i warto zwracać na nie szczególną uwagę.</p>
+<p>Najsilniejsze korelacje z ogólną oceną kawy (<code>Total.Cup.Points</code>) występują dla parametrów <code>Flavor</code> i <code>Aftertaste</code> – ich wartości przekraczają 0.8, osiągając niemal 0.9. Są one oznaczone kolorem pomarańczowym. Wynik ten wskazuje, że smak i posmak kawy są kluczowymi cechami wpływającymi na jej postrzeganie.</p>
 <p>Inne istotne korelacje dotyczą aromatu i kwasowości – ich związki z oceną ogólną wynoszą odpowiednio 0.76 i 0.79. To wskazuje na znaczenie tych cech w postrzeganiu jakości kawy. Łącznie wyniki sugerują, że cechy takie jak smak, posmak, aromat i kwasowość mają największy wpływ na ogólną ocenę kawy, co warto uwzględnić przy wyborze lepszego produktu.</p>
+<p>Warto zaznaczyć, że macierz korelacji została opracowana przy użyciu współczynnika korelacji rang Spearmana.</p>
 </section>
 </section>
 <section id="analiza---zmienne-kategoryczne" class="level3">
@@ -380,6 +381,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <p>Na podstawie powyższego wykresu pudełkowego można zauważyć, że <strong>mediana oceny ogólnej kawy jest najwyższa w przypadku Afryki</strong>. Może to sugerować, że kraje afrykańskie produkują kawy o wyższej jakości. Dodatkowo, górny wąs wykresu dla Afryki przekracza wartość 90 i jest wyraźnie dłuższy niż dolny wąs. Świadczy to o dużym zróżnicowaniu w ocenach, z przewagą wyższych wartości, co oznacza, że kawa z Afryki częściej osiąga wyjątkowo wysokie oceny.</p>
 <p>Dla Ameryki i Azji mediana ocen jest na zbliżonym poziomie. W przypadku Ameryki wykres pokazuje dłuższe wąsy, co wskazuje na większe rozproszenie danych – kawa pochodząca z tego regionu może być zarówno bardzo dobrej jakości, jak i przeciętnej. Natomiast w Azji wąsy są krótsze niż w Ameryce, co sugeruje mniejszą zmienność w ocenach kawy. Azjatycka kawa charakteryzuje się nieco niższą medianą, ale bardziej jednorodnymi ocenami w porównaniu do kawy z Ameryki.</p>
+<p><br></p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
